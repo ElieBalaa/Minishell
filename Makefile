@@ -12,6 +12,10 @@ LDLIBS    := -lreadline -lhistory -Llibft -lft
 SRCS      := main.c \
              src/tokenizer/tokenization.c \
 			 src/tokenizer/tokenization_utils.c \
+			 src/gc/simple_gc.c \
+			 src/gc/gc_malloc.c \
+			 src/gc/gc_tokenizer.c \
+			 src/gc/gc_whitespace.c \
 
 # Objects
 OBJ_DIR   := obj

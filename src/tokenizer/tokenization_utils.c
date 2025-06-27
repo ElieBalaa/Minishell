@@ -52,3 +52,19 @@ int	count_double_array(char **str)
 		i++;
 	return (i);
 }
+
+int	check_if_quoted(t_token **tokens)
+{
+	int	i;
+
+	if (!tokens)
+		return (-1);
+	i = 0;
+	while (tokens[i])
+	{
+		if (!is_quoted(tokens[i]->text))
+			return (-1);
+		i++;
+	}
+	return (0);
+}
