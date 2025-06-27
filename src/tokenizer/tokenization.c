@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:24:29 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 13:18:17 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:39:04 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_token	**split_on_space(char *str)
 
 	if (!str)
 		return (NULL);
-	words = ft_split(str, ' ');
+	words = ft_split_charset(str, " 	");
 	tokens = (t_token **)malloc(sizeof(t_token *)
 			* (count_double_array(words) + 1));
 	if (!words || !tokens)
@@ -64,3 +64,23 @@ void	classify_tokens(t_token **tokens)
 	}
 }
 
+
+
+int is_quoted(char *str)
+{
+	int j = 0;
+	int count_double = 0;
+	int count_single = 0;
+	while (str[j])
+	{
+		if(str[j] == '"')
+			count_double++;
+		if (str[j]== '\'')
+			count_single++;
+		j++;
+	}
+	if((count_double && (count_double%2 == 0) )|| (count_single && (count_single%2== 0)))
+		return 1;
+	else 
+		return 0;
+}

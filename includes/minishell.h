@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/26 23:42:27 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:36:43 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,7 @@ void	free_tokens(t_token **tokens);
 int		count_double_array(char **str);
 
 t_token	**split_on_space(char *str);
+int		check_if_quoted(t_token **tokens);
+int 	is_quoted(char *str);
+
 #endif
