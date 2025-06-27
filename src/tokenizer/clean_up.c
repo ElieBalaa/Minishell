@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenization_utils.c                               :+:      :+:    :+:   */
+/*   clean_up.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/26 22:11:09 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 17:15:38 by oiskanda         ###   ########.fr       */
+/*   Created: 2025/06/27 19:57:57 by oiskanda          #+#    #+#             */
+/*   Updated: 2025/06/28 00:45:35 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,28 +43,27 @@ void	ft_free_split(char **str)
 	free(str);
 }
 
-int	count_double_array(char **str)
+void	free_ast(t_ast *node)
 {
-	int	i;
+	t_ast	*next;
+	int		i;
 
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-int	check_if_quoted(t_token **tokens)
-{
-	int	i;
-
-	if (!tokens)
-		return (-1);
-	i = 0;
-	while (tokens[i])
+	while (node)
 	{
-		if (!is_quoted(tokens[i]->text))
-			return (-1);
-		i++;
+		next = node->right;
+		i = 0;
+		if (node->cmd)
+		{
+			while (node->cmd[i])
+			{
+				free(node->cmd[i]);
+				i++;
+			}
+			free(node->cmd);
+		}
+		free(node->input);
+		free(node->output);
+		free(node);
+		node = next;
 	}
-	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/07 00:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/27 18:14:50 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,4 @@ char	**split_whitespace(char *str)
 	}
 	words[word_count] = NULL;
 	return (words);
-} 
+}

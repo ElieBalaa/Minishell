@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_tokenizer.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
+/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 16:44:01 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/06/27 18:09:40 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,4 @@ t_token	**gc_split_on_space(char *str)
 	tokens[count] = NULL;
 	ft_free_split(words);
 	return (tokens);
-} 
+}

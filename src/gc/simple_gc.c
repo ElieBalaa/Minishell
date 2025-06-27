@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_gc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
+/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 16:44:40 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/06/27 18:14:58 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,4 @@ void	gc_emergency_cleanup(int sig)
 {
 	gc_cleanup_all();
 	exit(sig);
-} 
+}

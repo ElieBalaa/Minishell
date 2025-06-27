@@ -1,45 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   gc_malloc.c                                        :+:      :+:    :+:   */
+/*   count_double_array.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 18:10:17 by oiskanda         ###   ########.fr       */
+/*   Created: 2025/06/27 19:59:46 by oiskanda          #+#    #+#             */
+/*   Updated: 2025/06/27 20:00:07 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "libft.h"
 
-void	*gc_malloc(size_t size)
+int	count_double_array(char **str)
 {
-	void	*ptr;
+	int	i;
 
-	ptr = malloc(size);
-	if (!ptr)
-		return (NULL);
-	if (!gc_add(ptr))
-	{
-		free(ptr);
-		return (NULL);
-	}
-	return (ptr);
-}
-
-char	*gc_strdup(const char *s)
-{
-	char	*dup;
-
-	if (!s)
-		return (NULL);
-	dup = ft_strdup(s);
-	if (!dup)
-		return (NULL);
-	if (!gc_add(dup))
-	{
-		free(dup);
-		return (NULL);
-	}
-	return (dup);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }

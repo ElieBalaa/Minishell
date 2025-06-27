@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 17:36:43 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 00:45:59 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,11 @@
 # include <signal.h>
 # include <sys/wait.h>
 
-typedef enum e_token_type
+typedef enum e_node_type
 {
-	T_PIPE,
-	T_REDIR_IN,
-	T_REDIR_OUT,
-	T_HEREDOC,
-	T_APPEND,
-	T_WORD
-}	t_type;
+	NODE_CMD,
+	NODE_PIPE
+}	t_node_type;
 
 typedef struct s_gc_node
 {
@@ -46,26 +42,36 @@ typedef struct s_ast
 	char			**cmd;
 	char			*input;
 	char			*output;
+	int				append;
 	struct s_ast	*right;
 }	t_ast;
 
 typedef struct s_token
 {
-	t_type				type;
 	char				*text;
 	struct s_token		*next;
 }	t_token;
 
 extern t_simple_gc	g_gc;
 
+			/*cleen up.c*/
 void	ft_free_split(char **str);
 void	free_tokens(t_token **tokens);
-int		count_double_array(char **str);
+void	free_ast(t_ast *node);
 
+			/*tokenization.c*/
 t_token	**split_on_space(char *str);
-int		check_if_quoted(t_token **tokens);
-int 	is_quoted(char *str);
+t_ast	*parse_pipeline(char **words);
+t_ast	*parse_segment(char **tokens, int n);
 
+			/*utils.c*/
+int		is_quoted(char *str);
+int		is_operator(char c);
+int		is_space(char c);
+int		is_redir(char *s);
+int		count_args(char **tok, int n);
+
+			/*garbage collecter*/
 int		gc_init(void);
 void	gc_cleanup_all(void);
 void	gc_emergency_cleanup(int sig);
