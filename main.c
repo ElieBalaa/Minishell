@@ -6,96 +6,61 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:12:42 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 15:30:42 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 23:10:59 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/minishell.h"
 
-void	print_ast(t_ast *n)
-{
-	int	i;
+// void	print_ast(t_ast *n)
+// {
+// 	int	i;
 
-	if (!n)
-		return ;
-	printf("CMD:");
-	i = 0;
-	while (n->cmd && n->cmd[i])
-	{
-		printf(" %s", n->cmd[i]);
-		i++;
-	}
-	if (n->input)
-		printf(" %s", n->input);            /* show input file   */
-	if (n->output)
-		printf(" %s %s",                    /* show output file  */
-			n->append ? ">>" : "", n->output); /* distinguish >>    */
-	printf("\n");
-	print_ast(n->right);                        /* next pipeline cmd */
-}
+// 	if (!n)
+// 		return ;
+// 	printf("CMD:");
+// 	i = 0;
+// 	while (n->cmd && n->cmd[i])
+// 	{
+// 		printf(" %s", n->cmd[i]);
+// 		i++;
+// 	}
+// 	if (n->input)
+// 		printf(" %s", n->input);
+// 	if (n->output)
+// 		printf(" %s %s", n->append ? ">>" : "", n->output);
+// 	printf("\n");
+// 	print_ast(n->right);
+// }
 
 // int main(void)
 // {
-// 	char	**w;
-// 	t_ast	*ast;
-// 	int		i;
-
-// 	char *tests[] = {
-// 		"ls -l",
-// 	"echo > out.txt | ls -la | cat <<LIM | echo \"hello world $home\" >> out.txt",
-// 		"grep foo < in.txt | wc -l >> log",
-// 		NULL
-// 	};
-// 	i = 0;
-// 	while (tests[i])
-// 	{
-// 		printf("Input: %s\n", tests[i]);
-// 		w = ft_split_charset(tests[i], " \t");
-// 		ast = parse_pipeline(w);
-// 		print_ast(ast);
-// 		free_ast(ast);
-// 		ft_free_split(w);
-// 		printf("\n");
-// 		i++;
-// 	}
-// 	return (0);
+//     while (1)
+//     {
+//         gc_init();
+//         char *line = readline("minishell> ");
+//         printf("Input: %s\n", line);
+//         if (!quotes_balanced(line))
+//         {
+//             fprintf(stderr, "minishell: syntax error: unclosed quote\n\n");
+//             continue;
+//         }
+//         char **words = ft_split_charset(line, " \t");
+//         if (!words)
+//         {
+//             fprintf(stderr, "Error: failed to split line\n\n");
+//             continue;
+//         }
+//         t_ast *ast = parse_pipeline(words);
+//         if (!ast)
+//         {
+//             fprintf(stderr, "Error: failed to parse AST\n\n");
+//             ft_free_split(words);
+//             continue;
+//         }
+//         print_ast(ast);
+//         gc_cleanup_all();
+//         printf("\n");
+//     }
+//     return 0;
 // }
-
-// static void	print_tokens(t_token *t)
-// {
-// 	while (t)
-// 	{
-// 		printf("[%s]", t->text);
-// 		if (t->next)
-// 			printf(" -> ");
-// 		t = t->next;
-// 	}
-// 	printf("\n");
-// }
-
-
-
-int	main(void)
-{
-	const char	*tests[] = {
-		"ls -l",
-		"echo > out.txt | ls -la | cat <<LIM | "
-		"echo \"hello $HOME\" >> out.txt",
-		"grep foo < in.txt | wc -l >> log",
-		NULL };
-	int			i;
-	t_ast		*ast;
-
-	gc_init();
-	i = 0;
-	while (tests[i])
-	{
-		printf("Input: %s\n", tests[i]);
-		ast = parse_line(tests[i]);
-		print_ast(ast);
-		printf("\n");
-		i++;
-	}
-	gc_cleanup_all();
-	return (0);
-}

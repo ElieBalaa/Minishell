@@ -6,82 +6,46 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:24:29 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 15:51:58 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 23:08:21 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-t_token	**split_on_space(char *str)
+static void	handle_redirections(t_ast *node, char **tokens, int *i, int n)
 {
-	int		i;
-	t_token	*tok;
-	char	**words;
-	t_token	**tokens;
-
-	if (!str)
-		return (NULL);
-	words = ft_split_charset(str, " 	");
-	tokens = (t_token **)malloc(sizeof(t_token *)
-			* (count_double_array(words) + 1));
-	if (!words || !tokens)
-		return (NULL);
-	i = -1;
-	while (++i < count_double_array(words))
-	{
-		tok = gc_malloc(sizeof(tok));
-		if (!tok)
-			ft_putstr_fd("malloc failed", 2);
-		tok->text = ft_strdup(words[i]);
-		tok->next = NULL;
-		tokens[i] = tok;
-	}
-	tokens[count_double_array(words)] = NULL;
-	ft_free_split(words);
-	return (tokens);
-}
-
-static void	fill_io(char **tok, int n, t_ast *node, char **av)
-{
-	int	i;
-	int	j;
-
-	i = -1;
-	j = 0;
-	while (++i < n)
-	{
-		if (is_redir(tok[i]) && i + 1 < n)
-		{
-			if (ft_strcmp(tok[i], "<") == 0)
-				node->input = gc_strdup(tok[++i]);
-			else if (ft_strcmp(tok[i], "<<") == 0 && i + 1 < n)
-				node->input = gc_strdup(tok[++i]);
-			else
-			{
-				node->append = (ft_strcmp(tok[i], ">>") == 0);
-				node->output = gc_strdup(tok[++i]);
-			}
-		}
-		else
-			av[j++] = gc_strdup(tok[i]);
-	}
-	av[j] = NULL;
+	if (ft_strcmp(tokens[*i], "<") == 0 && *i + 1 < n)
+		node->input = strip_surrounding_quotes(tokens[++(*i)]);
+	else if ((ft_strcmp(tokens[*i], ">") == 0
+			|| ft_strcmp(tokens[*i], ">>") == 0) && *i + 1 < n)
+		node->output = strip_surrounding_quotes(tokens[++(*i)]);
 }
 
 t_ast	*parse_segment(char **tokens, int n)
 {
 	t_ast	*node;
 	char	**argv;
-	int		argc;
+	int		i;
+	int		j;
 
-	argc = count_args(tokens, n);
-	argv = gc_malloc(sizeof(*argv) * (argc + 1));
 	node = gc_malloc(sizeof(*node));
 	node->input = NULL;
 	node->output = NULL;
 	node->right = NULL;
-	node->append = 0;
-	fill_io(tokens, n, node, argv);
+	argv = gc_malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
+	if (!argv)
+		return (NULL);
+	i = -1;
+	j = 0;
+	while (++i < n)
+	{
+		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
+			|| ft_strcmp(tokens[i], ">>") == 0)
+			handle_redirections(node, tokens, &i, n);
+		else
+			argv[j++] = strip_surrounding_quotes(tokens[i]);
+	}
+	argv[j] = NULL;
 	node->cmd = argv;
 	return (node);
 }

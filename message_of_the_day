@@ -1,0 +1,11 @@
+Today I wrapped up our parsing layer for Minishell and here’s what I accomplished:
+
+Quote safety: I added a pre-parse check that rejects any line with unbalanced single or double quotes, and I strip matching outer quotes so inputs like "foo bar" or 'baz qux' become single arguments in our AST.
+
+Tokenization & AST: I moved from a naive space-split to a two-step parser—first splitting on whitespace, then on | to build a linked pipeline of command nodes. Each node now correctly extracts <, >, and >> redirections into input/output fields and collects the rest into its argv[].
+
+Memory hygiene: I made sure every readline() buffer and split-array gets freed, and I clear Readline’s history at exit. Valgrind now reports zero definite leaks.
+
+With parsing, quote handling, and resource cleanup solidly in place, we’re all set to tackle the execution phase next: forking, piping, built-in dispatch, and redirections on our AST. Let me know if you’d like to review any of today’s changes in detail!
+
+Every thing is following the norminette i did my tests on every thing, do your tests also, if you want me to explain anything i am ready, their is still a small memory leaks tomorrow i will fix them to make it fully working.

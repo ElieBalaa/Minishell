@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 15:07:59 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 22:55:17 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,16 @@ int		is_space(char c);
 int		is_redir(char *s);
 int		count_args(char **tok, int n);
 int		op_len(const char *s);
+int		quotes_balanced(const char *s);
+char	*strip_surrounding_quotes(const char *str);
+
 			/*garbage collecter*/
 int		gc_init(void);
 void	gc_cleanup_all(void);
 void	gc_emergency_cleanup(int sig);
 void	*gc_malloc(size_t size);
 char	*gc_strdup(const char *s);
+char	*gc_strndup(const char *s, int n);
 int		gc_add(void *ptr);
 t_token	**gc_split_on_space(char *str);
 int		is_whitespace(char c);
