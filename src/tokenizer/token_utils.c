@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 22:11:09 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 00:11:03 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:36:37 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,27 @@
 
 int	is_space(char c)
 {
-	return (c == 32 || (c >= 9 && c <= 13));
+	return (c == ' ' || c == '\t' || c == '\n'
+		|| c == '\v' || c == '\f' || c == '\r');
 }
 
 int	is_operator(char c)
 {
 	return (c == '>' || c == '<' || c == '|');
+}
+
+int	op_len(const char *s)
+{
+	if ((s[0] == '<' || s[0] == '>') && s[1] == s[0])
+		return (2);
+	return (1);
+}
+
+t_token	*tok_last(t_token *lst)
+{
+	while (lst && lst->next)
+		lst = lst->next;
+	return (lst);
 }
 
 int	is_quoted(char *str)
@@ -43,27 +58,4 @@ int	is_quoted(char *str)
 		|| (count_single && (count_single % 2 == 0)))
 		return (1);
 	return (0);
-}
-
-int	is_redir(char *s)
-{
-	return (ft_strcmp(s, "<") == 0 || ft_strcmp(s, ">") == 0
-		|| ft_strcmp(s, ">>") == 0);
-}
-
-int	count_args(char **tok, int n)
-{
-	int	i;
-	int	cnt;
-
-	i = -1;
-	cnt = 0;
-	while (++i < n)
-	{
-		if (is_redir(tok[i]))
-			i++;
-		else
-			cnt++;
-	}
-	return (cnt);
 }

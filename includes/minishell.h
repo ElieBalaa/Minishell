@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 00:45:59 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:07:59 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,6 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <sys/wait.h>
-
-typedef enum e_node_type
-{
-	NODE_CMD,
-	NODE_PIPE
-}	t_node_type;
 
 typedef struct s_gc_node
 {
@@ -37,20 +31,21 @@ typedef struct s_simple_gc
 	int			count;
 }	t_simple_gc;
 
+typedef struct s_token
+{
+	char				*text;
+	struct s_token		*next;
+}	t_token;
+
 typedef struct s_ast
 {
 	char			**cmd;
 	char			*input;
 	char			*output;
 	int				append;
+	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
-
-typedef struct s_token
-{
-	char				*text;
-	struct s_token		*next;
-}	t_token;
 
 extern t_simple_gc	g_gc;
 
@@ -58,11 +53,16 @@ extern t_simple_gc	g_gc;
 void	ft_free_split(char **str);
 void	free_tokens(t_token **tokens);
 void	free_ast(t_ast *node);
+void	free_toklist(t_token *lst);
 
 			/*tokenization.c*/
 t_token	**split_on_space(char *str);
 t_ast	*parse_pipeline(char **words);
 t_ast	*parse_segment(char **tokens, int n);
+t_token	*tok_last(t_token *lst);
+t_token	*tokenize(const char *line);
+t_ast	*parse_line(const char *line);
+char	**tok_to_array(t_token *lst);
 
 			/*utils.c*/
 int		is_quoted(char *str);
@@ -70,7 +70,7 @@ int		is_operator(char c);
 int		is_space(char c);
 int		is_redir(char *s);
 int		count_args(char **tok, int n);
-
+int		op_len(const char *s);
 			/*garbage collecter*/
 int		gc_init(void);
 void	gc_cleanup_all(void);

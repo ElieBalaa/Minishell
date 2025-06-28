@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:24:29 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 00:45:47 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:51:58 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ t_token	**split_on_space(char *str)
 	i = -1;
 	while (++i < count_double_array(words))
 	{
-		tok = (t_token *)malloc(sizeof(t_token));
+		tok = gc_malloc(sizeof(tok));
 		if (!tok)
 			ft_putstr_fd("malloc failed", 2);
 		tok->text = ft_strdup(words[i]);
@@ -39,6 +39,51 @@ t_token	**split_on_space(char *str)
 	tokens[count_double_array(words)] = NULL;
 	ft_free_split(words);
 	return (tokens);
+}
+
+static void	fill_io(char **tok, int n, t_ast *node, char **av)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	j = 0;
+	while (++i < n)
+	{
+		if (is_redir(tok[i]) && i + 1 < n)
+		{
+			if (ft_strcmp(tok[i], "<") == 0)
+				node->input = gc_strdup(tok[++i]);
+			else if (ft_strcmp(tok[i], "<<") == 0 && i + 1 < n)
+				node->input = gc_strdup(tok[++i]);
+			else
+			{
+				node->append = (ft_strcmp(tok[i], ">>") == 0);
+				node->output = gc_strdup(tok[++i]);
+			}
+		}
+		else
+			av[j++] = gc_strdup(tok[i]);
+	}
+	av[j] = NULL;
+}
+
+t_ast	*parse_segment(char **tokens, int n)
+{
+	t_ast	*node;
+	char	**argv;
+	int		argc;
+
+	argc = count_args(tokens, n);
+	argv = gc_malloc(sizeof(*argv) * (argc + 1));
+	node = gc_malloc(sizeof(*node));
+	node->input = NULL;
+	node->output = NULL;
+	node->right = NULL;
+	node->append = 0;
+	fill_io(tokens, n, node, argv);
+	node->cmd = argv;
+	return (node);
 }
 
 t_ast	*add_pipeline_node(t_ast *root, t_ast *cur, t_ast *node)
@@ -76,47 +121,4 @@ t_ast	*parse_pipeline(char **w)
 		i++;
 	}
 	return (root);
-}
-
-static void	fill_io(char **tok, int n, t_ast *node, char **av)
-{
-	int	i;
-	int	j;
-
-	i = -1;
-	j = 0;
-	while (++i < n)
-	{
-		if (is_redir(tok[i]) && i + 1 < n)
-		{
-			if (ft_strcmp(tok[i], "<") == 0)
-				node->input = ft_strdup(tok[++i]);
-			else
-			{
-				node->append = (ft_strcmp(tok[i], ">>") == 0);
-				node->output = ft_strdup(tok[++i]);
-			}
-		}
-		else
-			av[j++] = ft_strdup(tok[i]);
-	}
-	av[j] = NULL;
-}
-
-t_ast	*parse_segment(char **tokens, int n)
-{
-	t_ast	*node;
-	char	**argv;
-	int		argc;
-
-	argc = count_args(tokens, n);
-	argv = malloc(sizeof(*argv) * (argc + 1));
-	node = malloc(sizeof(*node));
-	node->input = NULL;
-	node->output = NULL;
-	node->right = NULL;
-	node->append = 0;
-	fill_io(tokens, n, node, argv);
-	node->cmd = argv;
-	return (node);
 }

@@ -6,16 +6,11 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 18:14:50 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:37:57 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t');
-}
 
 int	count_words(char *str)
 {
@@ -28,12 +23,12 @@ int	count_words(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (!is_whitespace(str[i]) && !in_word)
+		if (!is_space(str[i]) && !in_word)
 		{
 			in_word = 1;
 			count++;
 		}
-		else if (is_whitespace(str[i]))
+		else if (is_space(str[i]))
 			in_word = 0;
 		i++;
 	}
@@ -47,12 +42,12 @@ char	*extract_word(char *str, int *start)
 	int		len;
 	int		i;
 
-	while (str[*start] && is_whitespace(str[*start]))
+	while (str[*start] && is_space(str[*start]))
 		(*start)++;
 	if (!str[*start])
 		return (NULL);
 	end = *start;
-	while (str[end] && !is_whitespace(str[end]))
+	while (str[end] && !is_space(str[end]))
 		end++;
 	len = end - *start;
 	word = malloc(len + 1);

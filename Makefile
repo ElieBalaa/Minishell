@@ -10,7 +10,10 @@ LDLIBS    := -lreadline -lhistory -Llibft -lft
 
 # Sources
 SRCS      := main.c \
+			 src/tokenizer/parser.c \
+			 src/tokenizer/utils.c \
 			 src/tokenizer/clean_up.c \
+			 src/tokenizer/lexer.c \
              src/tokenizer/token.c \
 			 src/tokenizer/token_utils.c \
 			 src/gc/simple_gc.c \
