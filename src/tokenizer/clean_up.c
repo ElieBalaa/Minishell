@@ -80,3 +80,26 @@ void	free_toklist(t_token *lst)
 		lst = next;
 	}
 }
+
+int	is_quoted(char *str)
+{
+	int	j;
+	int	count_double;
+	int	count_single;
+
+	j = 0;
+	count_double = 0;
+	count_single = 0;
+	while (str[j])
+	{
+		if (str[j] == '"')
+			count_double++;
+		if (str[j] == '\'')
+			count_single++;
+		j++;
+	}
+	if ((count_double && (count_double % 2 == 0))
+		|| (count_single && (count_single % 2 == 0)))
+		return (1);
+	return (0);
+}

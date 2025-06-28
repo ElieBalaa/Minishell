@@ -12,40 +12,36 @@
 
 #include "../../includes/minishell.h"
 
-static void	handle_redirections(t_ast *node, char **tokens, int *i, int n)
+static void	fill_argv(char **tokens, int n, char **argv, t_ast *node)
 {
-	if (ft_strcmp(tokens[*i], "<") == 0 && *i + 1 < n)
-		node->input = strip_surrounding_quotes(tokens[++(*i)]);
-	else if ((ft_strcmp(tokens[*i], ">") == 0
-			|| ft_strcmp(tokens[*i], ">>") == 0) && *i + 1 < n)
-		node->output = strip_surrounding_quotes(tokens[++(*i)]);
+	int	i;
+	int	j;
+	int	max_args;
+
+	max_args = count_args(tokens, n);
+	i = -1;
+	j = 0;
+	while (++i < n && tokens[i])
+	{
+		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
+			|| ft_strcmp(tokens[i], ">>") == 0)
+			process_redir(tokens, &i, node);
+		else if (j < max_args)
+			argv[j++] = strip_surrounding_quotes(tokens[i]);
+	}
+	argv[j] = NULL;
 }
 
 t_ast	*parse_segment(char **tokens, int n)
 {
 	t_ast	*node;
 	char	**argv;
-	int		i;
-	int		j;
 
-	node = gc_malloc(sizeof(*node));
-	node->input = NULL;
-	node->output = NULL;
-	node->right = NULL;
+	node = init_ast_node();
 	argv = gc_malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
 	if (!argv)
 		return (NULL);
-	i = -1;
-	j = 0;
-	while (++i < n)
-	{
-		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
-			|| ft_strcmp(tokens[i], ">>") == 0)
-			handle_redirections(node, tokens, &i, n);
-		else
-			argv[j++] = strip_surrounding_quotes(tokens[i]);
-	}
-	argv[j] = NULL;
+	fill_argv(tokens, n, argv, node);
 	node->cmd = argv;
 	return (node);
 }
@@ -57,6 +53,12 @@ t_ast	*add_pipeline_node(t_ast *root, t_ast *cur, t_ast *node)
 	else
 		cur->right = node;
 	return (root);
+}
+
+static t_ast	*create_segment_node(char **w, int start, int i)
+{
+	return (parse_segment(w + start,
+			i - start + (ft_strcmp(w[i], "|") != 0)));
 }
 
 t_ast	*parse_pipeline(char **w)
@@ -73,11 +75,9 @@ t_ast	*parse_pipeline(char **w)
 	cur = NULL;
 	while (w[i])
 	{
-		if (ft_strcmp(w[i], "|") == 0 || w[i + 1] == NULL)
+		if (is_pipeline_end(w, i))
 		{
-			node = parse_segment(
-					w + start,
-					i - start + (ft_strcmp(w[i], "|") != 0));
+			node = create_segment_node(w, start, i);
 			root = add_pipeline_node(root, cur, node);
 			cur = node;
 			start = i + 1;

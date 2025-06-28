@@ -23,14 +23,23 @@ int	count_args(char **tok, int n)
 	int	i;
 	int	cnt;
 
-	i = -1;
+	if (!tok || n <= 0)
+		return (0);
+	i = 0;
 	cnt = 0;
-	while (++i < n)
+	while (i < n && tok[i])
 	{
 		if (is_redir(tok[i]))
-			i++;
+		{
+			i += 2;
+			if (i >= n)
+				break ;
+		}
 		else
+		{
 			cnt++;
+			i++;
+		}
 	}
 	return (cnt);
 }
@@ -81,7 +90,7 @@ t_token	**split_on_space(char *str)
 
 	if (!str)
 		return (NULL);
-	words = ft_split_charset(str, " 	");
+	words = split_whitespace(str);
 	if (!words)
 		return (NULL);
 	tokens = gc_malloc(sizeof(t_token *)
@@ -89,7 +98,7 @@ t_token	**split_on_space(char *str)
 	i = -1;
 	while (++i < count_double_array(words))
 	{
-		tok = gc_malloc(sizeof(tok));
+		tok = gc_malloc(sizeof(t_token));
 		if (!tok)
 			ft_putstr_fd("malloc failed", 2);
 		tok->text = gc_strdup(words[i]);

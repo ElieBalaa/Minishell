@@ -35,23 +35,6 @@ static void	add_tok(t_token **lst, const char *start, int len)
 		tok_last(*lst)->next = new;
 }
 
-static const char	*skip_quotes(const char *p)
-{
-	char	q;
-
-	q = *p++;
-	while (*p && *p != q)
-	{
-		if (q == '"' && *p == '\\' && p[1])
-			p += 2;
-		else
-			p++;
-	}
-	if (*p == q)
-		p++;
-	return (p);
-}
-
 static void	advance_word(const char **ptr)
 {
 	const char	*p;
@@ -69,13 +52,29 @@ static void	advance_word(const char **ptr)
 	*ptr = p;
 }
 
+static void	process_operator(t_token **lst, const char **p)
+{
+	add_tok(lst, *p, op_len(*p));
+	*p += op_len(*p);
+}
+
+static void	process_word(t_token **lst, const char **p)
+{
+	const char	*start;
+
+	start = *p;
+	advance_word(p);
+	add_tok(lst, start, *p - start);
+}
+
 t_token	*tokenize(const char *line)
 {
-	t_token			*lst;
-	const char		*p;
-	const char		*start;
+	t_token		*lst;
+	const char	*p;
 
 	lst = NULL;
+	if (!line)
+		return (NULL);
 	p = line;
 	while (*p)
 	{
@@ -85,14 +84,9 @@ t_token	*tokenize(const char *line)
 			continue ;
 		}
 		if (is_operator(*p))
-		{
-			add_tok(&lst, p, op_len(p));
-			p += op_len(p);
-			continue ;
-		}
-		start = p;
-		advance_word(&p);
-		add_tok(&lst, start, p - start);
+			process_operator(&lst, &p);
+		else
+			process_word(&lst, &p);
 	}
 	return (lst);
 }

@@ -49,3 +49,38 @@ t_ast	*parse_line(const char *line)
 	root = parse_pipeline(words);
 	return (root);
 }
+
+t_ast	*init_ast_node(void)
+{
+	t_ast	*node;
+
+	node = gc_malloc(sizeof(*node));
+	node->input = NULL;
+	node->output = NULL;
+	node->append = 0;
+	node->left = NULL;
+	node->right = NULL;
+	return (node);
+}
+
+int	is_pipeline_end(char **w, int i)
+{
+	return (ft_strcmp(w[i], "|") == 0 || w[i + 1] == NULL);
+}
+
+const char	*skip_quotes(const char *p)
+{
+	char	q;
+
+	q = *p++;
+	while (*p && *p != q)
+	{
+		if (q == '"' && *p == '\\' && p[1])
+			p += 2;
+		else
+			p++;
+	}
+	if (*p == q)
+		p++;
+	return (p);
+}

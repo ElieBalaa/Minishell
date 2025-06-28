@@ -50,7 +50,7 @@ char	*extract_word(char *str, int *start)
 	while (str[end] && !is_space(str[end]))
 		end++;
 	len = end - *start;
-	word = malloc(len + 1);
+	word = gc_malloc(len + 1);
 	if (!word)
 		return (NULL);
 	i = 0;
@@ -81,7 +81,7 @@ char	**split_whitespace(char *str)
 	if (!str)
 		return (NULL);
 	word_count = count_words(str);
-	words = malloc(sizeof(char *) * (word_count + 1));
+	words = gc_malloc(sizeof(char *) * (word_count + 1));
 	if (!words)
 		return (NULL);
 	i = 0;

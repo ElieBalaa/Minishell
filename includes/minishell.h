@@ -63,6 +63,9 @@ t_token	*tok_last(t_token *lst);
 t_token	*tokenize(const char *line);
 t_ast	*parse_line(const char *line);
 char	**tok_to_array(t_token *lst);
+t_ast	*init_ast_node(void);
+int		is_pipeline_end(char **w, int i);
+const char	*skip_quotes(const char *p);
 
 			/*utils.c*/
 int		is_quoted(char *str);
@@ -73,6 +76,7 @@ int		count_args(char **tok, int n);
 int		op_len(const char *s);
 int		quotes_balanced(const char *s);
 char	*strip_surrounding_quotes(const char *str);
+void	process_redir(char **tok, int *i, t_ast *node);
 
 			/*garbage collecter*/
 int		gc_init(void);

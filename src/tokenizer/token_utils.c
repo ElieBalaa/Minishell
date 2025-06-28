@@ -37,25 +37,19 @@ t_token	*tok_last(t_token *lst)
 	return (lst);
 }
 
-int	is_quoted(char *str)
+void	process_redir(char **tok, int *i, t_ast *node)
 {
-	int	j;
-	int	count_double;
-	int	count_single;
-
-	j = 0;
-	count_double = 0;
-	count_single = 0;
-	while (str[j])
+	if (!tok || !tok[*i] || !node || *i < 0)
+		return ;
+	if (ft_strcmp(tok[*i], "<") == 0 && tok[*i + 1])
 	{
-		if (str[j] == '"')
-			count_double++;
-		if (str[j] == '\'')
-			count_single++;
-		j++;
+		(*i)++;
+		node->input = strip_surrounding_quotes(tok[*i]);
 	}
-	if ((count_double && (count_double % 2 == 0))
-		|| (count_single && (count_single % 2 == 0)))
-		return (1);
-	return (0);
+	else if ((ft_strcmp(tok[*i], ">") == 0
+		|| ft_strcmp(tok[*i], ">>") == 0) && tok[*i + 1])
+	{
+		(*i)++;
+		node->output = strip_surrounding_quotes(tok[*i]);
+	}
 }
