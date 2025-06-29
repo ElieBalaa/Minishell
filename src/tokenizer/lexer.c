@@ -11,11 +11,13 @@
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include <string.h>
 
 static void	add_tok(t_token **lst, const char *start, int len)
 {
 	t_token	*new;
 	char	*txt;
+	char	*processed;
 	int		i;
 
 	txt = gc_malloc(len + 1);
@@ -26,8 +28,9 @@ static void	add_tok(t_token **lst, const char *start, int len)
 		i++;
 	}
 	txt[i] = '\0';
+	processed = process_token_escapes(txt);
 	new = gc_malloc(sizeof(*new));
-	new->text = txt;
+	new->text = processed;
 	new->next = NULL;
 	if (*lst == NULL)
 		*lst = new;

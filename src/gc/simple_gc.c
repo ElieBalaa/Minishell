@@ -14,6 +14,22 @@
 
 t_simple_gc	g_gc = {NULL, 0};
 
+static void	cleanup_readline(void)
+{
+	rl_clear_history();
+	rl_cleanup_after_signal();
+	rl_deprep_terminal();
+	rl_reset_line_state();
+	rl_free_undo_list();
+}
+
+static void	gc_emergency_cleanup(int sig)
+{
+	cleanup_readline();
+	gc_cleanup_all();
+	exit(sig);
+}
+
 int	gc_init(void)
 {
 	g_gc.head = NULL;
@@ -56,10 +72,4 @@ void	gc_cleanup_all(void)
 	}
 	g_gc.head = NULL;
 	g_gc.count = 0;
-}
-
-void	gc_emergency_cleanup(int sig)
-{
-	gc_cleanup_all();
-	exit(sig);
 }

@@ -49,7 +49,7 @@ typedef struct s_ast
 
 extern t_simple_gc	g_gc;
 
-			/*cleen up.c*/
+			/*clean up.c*/
 void	ft_free_split(char **str);
 void	free_tokens(t_token **tokens);
 void	free_ast(t_ast *node);
@@ -67,6 +67,10 @@ t_ast	*init_ast_node(void);
 int		is_pipeline_end(char **w, int i);
 const char	*skip_quotes(const char *p);
 
+			/*escape_utils.c*/
+int		should_process_escape(char next_char, int in_single, int in_double);
+char	*process_token_escapes(const char *str);
+
 			/*utils.c*/
 int		is_quoted(char *str);
 int		is_operator(char c);
@@ -78,10 +82,9 @@ int		quotes_balanced(const char *s);
 char	*strip_surrounding_quotes(const char *str);
 void	process_redir(char **tok, int *i, t_ast *node);
 
-			/*garbage collecter*/
+			/*garbage collector*/
 int		gc_init(void);
 void	gc_cleanup_all(void);
-void	gc_emergency_cleanup(int sig);
 void	*gc_malloc(size_t size);
 char	*gc_strdup(const char *s);
 char	*gc_strndup(const char *s, int n);
