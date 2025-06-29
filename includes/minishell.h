@@ -19,6 +19,8 @@
 # include <signal.h>
 # include <sys/wait.h>
 
+extern char		**environ;
+
 typedef struct s_gc_node
 {
 	void				*ptr;
@@ -71,6 +73,19 @@ const char	*skip_quotes(const char *p);
 int		should_process_escape(char next_char, int in_single, int in_double);
 char	*process_token_escapes(const char *str);
 
+			/*execution.c*/
+int		execute_ast(t_ast *ast);
+char	*resolve_command_path(const char *cmd);
+int		fork_and_execute(const char *cmd_path, char **argv);
+
+			/*builtins.c*/
+int		builtin_exit(char **args);
+int		builtin_echo(char **args);
+int		builtin_cd(char **args);
+int		builtin_pwd(char **args);
+int		builtin_env(char **args);
+int		execute_builtin(char **args);
+
 			/*utils.c*/
 int		is_quoted(char *str);
 int		is_operator(char c);
@@ -94,5 +109,6 @@ int		is_whitespace(char c);
 int		count_words(char *str);
 char	*extract_word(char *str, int *start);
 char	**split_whitespace(char *str);
+char	*gc_strjoin(const char *s1, const char *s2);
 
 #endif

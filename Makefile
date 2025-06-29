@@ -27,6 +27,11 @@ SRCS      := main.c \
 			 src/tokenizer/escape_utils.c \
              src/tokenizer/token.c \
 			 src/tokenizer/token_utils.c \
+			 src/execution/executor.c \
+			 src/execution/path_resolver.c \
+			 src/execution/process_manager.c \
+			 src/execution/builtins.c \
+			 src/execution/builtin_executor.c \
 			 src/gc/simple_gc.c \
 			 src/gc/gc_malloc.c \
 			 src/gc/gc_tokenizer.c \

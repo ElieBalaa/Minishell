@@ -63,19 +63,13 @@ int main(void)
             fprintf(stderr, "minishell: syntax error: unclosed quote\n\n");
             continue;
         }
-        char **words = split_whitespace(line);
-        if (!words)
-        {
-            fprintf(stderr, "Error: failed to split line\n\n");
-            continue;
-        }
-        t_ast *ast = parse_pipeline(words);
+        t_ast *ast = parse_line(line);
         if (!ast)
         {
             fprintf(stderr, "Error: failed to parse AST\n\n");
             continue;
         }
-        print_ast(ast);
+        execute_ast(ast);
         gc_cleanup_all();
         printf("\n");
     }

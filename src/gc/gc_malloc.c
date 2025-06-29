@@ -82,3 +82,20 @@ char	*gc_strndup(const char *s, int n)
 	}
 	return (dup);
 }
+
+char	*gc_strjoin(const char *s1, const char *s2)
+{
+	char	*joined;
+
+	if (!s1 || !s2)
+		return (NULL);
+	joined = ft_strjoin((char *)s1, (char *)s2);
+	if (!joined)
+		return (NULL);
+	if (!gc_add(joined))
+	{
+		free(joined);
+		return (NULL);
+	}
+	return (joined);
+}
