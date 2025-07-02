@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:24:29 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 23:08:21 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:26:42 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	fill_argv(char **tokens, int n, char **argv, t_ast *node)
 			|| ft_strcmp(tokens[i], ">>") == 0)
 			process_redir(tokens, &i, node);
 		else if (j < max_args)
-			argv[j++] = strip_surrounding_quotes(tokens[i]);
+			argv[j++] = ft_strdup(tokens[i]);
 	}
 	argv[j] = NULL;
 }
@@ -38,7 +38,7 @@ t_ast	*parse_segment(char **tokens, int n)
 	char	**argv;
 
 	node = init_ast_node();
-	argv = gc_malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
+	argv = malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
 	if (!argv)
 		return (NULL);
 	fill_argv(tokens, n, argv, node);

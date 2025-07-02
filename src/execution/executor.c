@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 14:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/02 14:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/02 00:15:46 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,42 +14,43 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static int	execute_single_command(t_ast *node)
+static int	exec_one(t_minishell *sh, t_ast *n)
 {
-	char	*cmd_path;
-	int		status;
+	char	*path;
+	int		st;
 
-	if (!node || !node->cmd || !node->cmd[0])
+	if (!n || !n->cmd || !n->cmd[0])
 		return (1);
-	status = execute_builtin(node->cmd);
-	if (status != -1)
-		return (status);
-	cmd_path = resolve_command_path(node->cmd[0]);
-	if (!cmd_path)
+	st = execute_builtin(sh, n->cmd);
+	if (st != -1)
+		return (st);
+	path = resolve_command_path(n->cmd[0]);
+	if (!path)
 	{
-		printf("minishell: %s: command not found\n", node->cmd[0]);
+		printf("minishell: %s: command not found\n", n->cmd[0]);
 		return (127);
 	}
-	status = fork_and_execute(cmd_path, node->cmd);
-	return (status);
+	st = fork_and_execute(sh, path, n->cmd);
+	return (st);
 }
 
-static int	execute_pipeline_node(t_ast *node)
+static int	exec_list(t_minishell *sh, t_ast *n)
 {
-	int	status;
+	int	st;
 
-	status = 0;
-	while (node)
+	st = 0;
+	while (n)
 	{
-		status = execute_single_command(node);
-		node = node->right;
+		st = exec_one(sh, n);
+		sh->last_exit = st;
+		n = n->right;
 	}
-	return (status);
+	return (st);
 }
 
-int	execute_ast(t_ast *ast)
+int	execute_ast(t_minishell *sh, t_ast *ast)
 {
 	if (!ast)
 		return (0);
-	return (execute_pipeline_node(ast));
+	return (exec_list(sh, ast));
 }

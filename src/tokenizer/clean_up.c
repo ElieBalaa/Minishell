@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:57:57 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 19:18:42 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/30 22:25:04 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ void	free_toklist(t_token *lst)
 	while (lst)
 	{
 		next = lst->next;
-		free(lst->text);
 		free(lst);
 		lst = next;
 	}

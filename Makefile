@@ -15,27 +15,35 @@ MAGENTA   := \033[35m
 CC        := cc
 CFLAGS    := -Wall -Wextra -Werror -g
 LDFLAGS   := -L$(HOME)/.brew/opt/readline/lib
-CPPFLAGS  := -Iinc -Ilibft -I$(HOME)/.brew/opt/readline/include
+CPPFLAGS  := -Iincludes -Ilibft -I$(HOME)/.brew/opt/readline/include
 LDLIBS    := -lreadline -lhistory -Llibft -lft
 
 # Sources
 SRCS      := main.c \
-			 src/tokenizer/parser.c \
-			 src/tokenizer/utils.c \
-			 src/tokenizer/clean_up.c \
-			 src/tokenizer/lexer.c \
-			 src/tokenizer/escape_utils.c \
+             src/tokenizer/expansion.c \
+             src/tokenizer/parser.c \
+             src/tokenizer/utils.c \
+             src/tokenizer/clean_up.c \
+             src/tokenizer/lexer.c \
+             src/tokenizer/escape_utils.c \
              src/tokenizer/token.c \
-			 src/tokenizer/token_utils.c \
-			 src/execution/executor.c \
-			 src/execution/path_resolver.c \
-			 src/execution/process_manager.c \
-			 src/execution/builtins.c \
-			 src/execution/builtin_executor.c \
-			 src/gc/simple_gc.c \
-			 src/gc/gc_malloc.c \
-			 src/gc/gc_tokenizer.c \
-			 src/gc/gc_whitespace.c \
+             src/tokenizer/token_utils.c \
+			 src/builtins/builtin_utils.c \
+			 src/builtins/cd.c \
+			 src/builtins/echo.c \
+			 src/builtins/env.c \
+			 src/builtins/exit.c \
+			 src/builtins/unset.c \
+			 src/builtins/export.c \
+			 src/builtins/pwd.c \
+			 src/builtins/execute_builtin.c \
+             src/gc/simple_gc.c \
+             src/gc/gc_malloc.c \
+             src/gc/gc_tokenizer.c \
+             src/gc/gc_whitespace.c \
+             src/execution/executor.c \
+             src/execution/path_resolver.c \
+             src/execution/process_manager.c
 
 # Objects
 OBJ_DIR   := obj
@@ -52,16 +60,17 @@ all: $(NAME)
 
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ 2>/dev/null
+	@echo "Compiling $<"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(LIBFT_LIB):
-	@$(MAKE) -C $(LIBFT_DIR) > /dev/null 2>&1
+	@$(MAKE) -C $(LIBFT_DIR) 
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJS) $(LIBFT_LIB)
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(NAME) 2>/dev/null
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(NAME) 
 	@printf "\n$(GREEN)$(BOLD)$(NAME) compiled successfully!$(RESET)\n"
 	@printf "$(GREEN)$(BOLD)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)\n"
 	@printf "$(GREEN)$(BOLD)Ready to execute: ./$(NAME)$(RESET)\n"

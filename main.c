@@ -6,22 +6,11 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:12:42 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 23:10:59 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:17:39 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/minishell.h"
-#include <signal.h>
-#include <stdlib.h>
-
-void	signal_handler(int sig)
-{
-	if (sig == SIGINT)
-	{
-		printf("\n");
-		exit(0);
-	}
-}
 
 void	print_ast(t_ast *n)
 {
@@ -44,34 +33,75 @@ void	print_ast(t_ast *n)
 	print_ast(n->right);
 }
 
-int main(void)
+void	sig_handler(int sig)
 {
-    signal(SIGINT, signal_handler);
-    
-    while (1)
-    {
-        gc_init();
-        char *line = readline("minishell> ");
-        if (!line)
-        {
-            printf("\nexit\n");
-            exit(0);
-        }
-        printf("Input: %s\n", line);
-        if (!quotes_balanced(line))
-        {
-            fprintf(stderr, "minishell: syntax error: unclosed quote\n\n");
-            continue;
-        }
-        t_ast *ast = parse_line(line);
-        if (!ast)
-        {
-            fprintf(stderr, "Error: failed to parse AST\n\n");
-            continue;
-        }
-        execute_ast(ast);
-        gc_cleanup_all();
-        printf("\n");
-    }
-    return 0;
+	if (sig == SIGINT)
+	{
+		ft_putchar_fd('\n', 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+}
+
+int	status_code(int wstatus)
+{
+	if (WIFEXITED(wstatus))
+		return (WEXITSTATUS(wstatus));
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
+	return (wstatus);
+}
+
+void init_minishell(t_minishell *sh, char **envp)
+{
+	size_t  n = 0;
+
+	while (envp[n])
+		++n;
+	sh->env = malloc(sizeof(char *) * (n + 1));        /* plain malloc */
+	if (!sh->env)
+		exit(EXIT_FAILURE);
+	for (size_t i = 0; i < n; ++i)
+	{
+		sh->env[i] = ft_strdup(envp[i]);               /* plain strdup */
+		if (!sh->env[i])
+			exit(EXIT_FAILURE);
+	}
+	sh->env[n] = NULL;
+	sh->last_exit = 0;
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_minishell	sh;
+	t_ast		*ast;
+	char		*line;
+
+	(void)argc;
+	(void)argv;
+	init_minishell(&sh, envp);
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, SIG_IGN);
+	while (1)
+	{
+		gc_init();
+		line = readline("minishell> ");
+		if (!line)
+			break ;
+		if (*line)
+			add_history(line);
+		if (!quotes_balanced(line))
+			ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
+		else if ((ast = parse_line(line, sh.last_exit)))
+		{
+			sh.last_exit = execute_ast(&sh, ast);
+			free_ast(ast);
+		}
+		free(line);
+		gc_cleanup_all();
+	}
+	ft_putendl_fd("exit", 1);
+	clear_history();
+	return (sh.last_exit);
 }

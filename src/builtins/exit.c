@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_executor.c                                 :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/02 14:45:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/02 14:45:00 by oiskanda         ###   ########.fr       */
+/*   Created: 2025/07/02 15:16:12 by oiskanda          #+#    #+#             */
+/*   Updated: 2025/07/02 15:18:21 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	execute_builtin(char **args)
+int	builtin_exit(t_minishell *sh, char **av)
 {
-	if (!args || !args[0])
-		return (-1);
-	if (ft_strcmp(args[0], "exit") == 0)
-		return (builtin_exit(args));
-	if (ft_strcmp(args[0], "echo") == 0)
-		return (builtin_echo(args));
-	if (ft_strcmp(args[0], "cd") == 0)
-		return (builtin_cd(args));
-	if (ft_strcmp(args[0], "pwd") == 0)
-		return (builtin_pwd(args));
-	if (ft_strcmp(args[0], "env") == 0)
-		return (builtin_env(args));
-	return (-1);
-} 
+	int	code;
+
+	(void)sh;
+	if (av[1])
+		code = ft_atoi(av[1]);
+	else
+		code = 0;
+	if (code < 0 || code > 255)
+		code %= 256;
+	printf("exit\n");
+	exit(code);
+}

@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 18:09:40 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:39:55 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,54 @@ t_token	**gc_split_on_space(char *str)
 	tokens[count] = NULL;
 	ft_free_split(words);
 	return (tokens);
+}
+
+int	ft_tokensize(t_token *lst)
+{
+	int	count;
+
+	count = 0;
+	while (lst)
+	{
+		count++;
+		lst = lst->next;
+	}
+	return (count);
+}
+
+char	*gc_itoa(int n)
+{
+	char	*s;
+
+	s = ft_itoa(n);
+	return (gc_add(s), s);
+}
+
+char	*qc_remove_quotes(const char *s)
+{
+	size_t	i;
+	size_t	w;
+	char	quote;
+	char	*out;
+
+	if (!s)
+		return (NULL);
+	out = gc_malloc(ft_strlen(s) + 1);
+	if (!out)
+		return (NULL);
+	i = 0;
+	w = 0;
+	quote = 0;
+	while (s[i])
+	{
+		if ((s[i] == '"' || s[i] == '\'') && quote == 0)
+			quote = s[i];
+		else if (quote && s[i] == quote)
+			quote = 0;
+		else
+			out[w++] = s[i];
+		++i;
+	}
+	out[w] = '\0';
+	return (out);
 }

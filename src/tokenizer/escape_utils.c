@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 12:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/02 12:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:12:24 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,9 @@ char	*process_token_escapes(const char *str)
 	int		j;
 	char	*result;
 
-	result = gc_malloc(strlen(str) + 1);
+	result = gc_malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
 	i = 0;
 	j = 0;
 	process_escape_loop(str, &i, &j, result);

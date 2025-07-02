@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:33:19 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 23:03:02 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:57:01 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,9 @@ char	*strip_surrounding_quotes(const char *str)
 	if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"')
 			|| (str[0] == '\'' && str[len - 1] == '\'')))
 	{
-		return (gc_strndup(str + 1, len - 2));
+		return (ft_strndup(str + 1, len - 2));
 	}
-	return (gc_strdup(str));
+	return (ft_strdup(str));
 }
 
 t_token	**split_on_space(char *str)
@@ -93,15 +93,15 @@ t_token	**split_on_space(char *str)
 	words = split_whitespace(str);
 	if (!words)
 		return (NULL);
-	tokens = gc_malloc(sizeof(t_token *)
+	tokens = malloc(sizeof(t_token *)
 			* (count_double_array(words) + 1));
 	i = -1;
 	while (++i < count_double_array(words))
 	{
-		tok = gc_malloc(sizeof(t_token));
+		tok = malloc(sizeof(t_token));
 		if (!tok)
 			ft_putstr_fd("malloc failed", 2);
-		tok->text = gc_strdup(words[i]);
+		tok->text = ft_strdup(words[i]);
 		tok->next = NULL;
 		tokens[i] = tok;
 	}

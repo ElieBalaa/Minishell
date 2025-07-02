@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 22:11:09 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 14:36:37 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:24:36 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ void	process_redir(char **tok, int *i, t_ast *node)
 	if (ft_strcmp(tok[*i], "<") == 0 && tok[*i + 1])
 	{
 		(*i)++;
-		node->input = strip_surrounding_quotes(tok[*i]);
+		node->input = ft_strdup(tok[*i]);
 	}
 	else if ((ft_strcmp(tok[*i], ">") == 0
-		|| ft_strcmp(tok[*i], ">>") == 0) && tok[*i + 1])
+			|| ft_strcmp(tok[*i], ">>") == 0) && tok[*i + 1])
 	{
 		(*i)++;
-		node->output = strip_surrounding_quotes(tok[*i]);
+		node->output = ft_strdup(tok[*i]);
 	}
 }
