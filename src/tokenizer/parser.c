@@ -6,47 +6,53 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 15:03:33 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/30 23:23:20 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:28:44 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	**tok_to_array(t_token *lst)
+char **tok_to_array(t_token *lst)
 {
 	size_t	count;
 	size_t	i;
 	char	**arr;
 
 	count = ft_tokensize(lst);
-	arr = malloc(sizeof(*arr) * (count + 1));
+	arr = gc_malloc(sizeof(*arr) * (count + 1));
 	if (!arr)
 		return (NULL);
 	i = 0;
 	while (lst)
 	{
-		arr[i++] = lst->text;
+		arr[i] = ft_strdup(lst->text);
+		if (!arr[i])
+		{
+			while (i--)
+				free(arr[i]);
+			free(arr);
+			return (NULL);
+		}
+		++i;
 		lst = lst->next;
 	}
 	arr[i] = NULL;
 	return (arr);
 }
 
-t_ast	*parse_line(const char *line, int last_exit)
+t_ast	*parse_line(const char *line, t_minishell *sh)
 {
 	t_token	*tok;
 	char	**words;
 	t_ast	*root;
 
-	tok = tokenize(line, last_exit);
+	tok = tokenize(line, sh);
 	if (!tok)
 		return (NULL);
 	words = tok_to_array(tok);
-	free_toklist(tok);
 	if (!words)
 		return (NULL);
 	root = parse_pipeline(words);
-	free(words);
 	return (root);
 }
 

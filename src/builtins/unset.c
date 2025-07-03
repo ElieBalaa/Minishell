@@ -6,22 +6,22 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:19 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 21:01:26 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:17:01 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	builtin_unset_env(t_minishell *sh, const char *key)
+void	env_unset(t_minishell *sh, const char *key)
 {
-	int		old_len;
+	int		old;
 	int		i;
 	int		j;
-	char	**new_env;
+	char	**new;
 
-	old_len = env_count(sh->env);
-	new_env = malloc(sizeof(*new_env) * old_len);
-	if (!new_env)
+	old = env_count(sh->env);
+	new = malloc(sizeof(*new) * old);
+	if (!new)
 		return ;
 	i = 0;
 	j = 0;
@@ -29,18 +29,15 @@ void	builtin_unset_env(t_minishell *sh, const char *key)
 	{
 		if (!(ft_strncmp(sh->env[i], key, ft_strlen(key)) == 0
 				&& sh->env[i][ft_strlen(key)] == '='))
-		{
-			new_env[j++] = sh->env[i];
-		}
+			new[j++] = sh->env[i];
 		else
 			free(sh->env[i]);
-		++i;
+		i++;
 	}
-	new_env[j] = NULL;
+	new[j] = NULL;
 	free(sh->env);
-	sh->env = new_env;
+	sh->env = new;
 }
-
 
 int	builtin_unset(t_minishell *sh, char **args)
 {
@@ -59,8 +56,8 @@ int	builtin_unset(t_minishell *sh, char **args)
 			err = 1;
 		}
 		else
-			builtin_unset_env(sh, args[i]);
-		++i;
+			env_unset(sh, args[i]);
+		i++;
 	}
 	return (err);
 }

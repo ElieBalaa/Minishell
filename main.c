@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:12:42 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 22:39:42 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 18:02:46 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		gc_init();
+		// gc_init();
 		line = readline("minishell> ");
 		if (!line)
 			break ;
@@ -93,13 +93,11 @@ int	main(int argc, char **argv, char **envp)
 			add_history(line);
 		if (!quotes_balanced(line))
 			ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
-		else if ((ast = parse_line(line, sh.last_exit)))
+		else if ((ast = parse_line(line, &sh)))
 		{
 			sh.last_exit = execute_ast(&sh, ast);
-			free_ast(ast);
 		}
-		free(line);
-		gc_cleanup_all();
+		// gc_cleanup_all(); 
 	}
 	ft_putendl_fd("exit", 1);
 	clear_history();

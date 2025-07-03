@@ -6,83 +6,85 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 21:36:54 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 17:57:37 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:03:45 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	get_var_length(const char *str)
+static int	var_length(const char *s)
 {
-	int	length;
+	int	len;
 
-	if (!ft_isalpha(*str) && *str != '_')
+	if (!ft_isalpha(*s) && *s != '_')
 		return (0);
-	length = 1;
-	while (str[length] && (ft_isalnum(str[length]) || str[length] == '_'))
-		length++;
-	return (length);
+	len = 1;
+	while (s[len] && (ft_isalnum(s[len]) || s[len] == '_'))
+		len++;
+	return (len);
 }
 
-static char	*expand_special_var(int *adv, int last_exit)
+static char	*lookup_var(const char *name, char **env)
 {
-	*adv = 1;
-	return (gc_itoa(last_exit));
+	size_t	n;
+
+	n = ft_strlen(name);
+	for (int i = 0; env[i]; i++)
+		if (!ft_strncmp(env[i], name, n) && env[i][n] == '=')
+			return (gc_strdup(env[i] + n + 1));
+	return (gc_strdup(""));
 }
 
-static char	*expand_normal_var(const char *str, int *adv)
+static char	*expand_one(const char *p, int *adv, int last_exit, char **env)
 {
-	char	*var_name;
-	char	*var_value;
+	char	*val;
 
-	*adv = get_var_length(str);
+	if (*p == '?')
+	{
+		*adv = 1;
+		return (gc_itoa(last_exit));
+	}
+	*adv = var_length(p);
 	if (*adv == 0)
 		return (gc_strdup("$"));
-	var_name = gc_strndup(str, *adv);
-	var_value = getenv(var_name);
-	if (!var_value)
-		var_value = "";
-	return (gc_strdup(var_value));
+	val = lookup_var(ft_strndup(p, *adv), env);
+	return (val);
 }
 
-static void	handle_quotes(char *str, size_t *i, int *in_quotes, char **result)
-{
-	char	quote;
-
-	quote = str[*i];
-	in_quotes[quote == '\''] ^= 1;
-	*result = gc_strjoin(*result, gc_strndup(&quote, 1));
-	(*i)++;
-}
-
-char	*expand_vars(const char *str, int last_exit)
+char	*expand_vars(const char *s, int last_exit, char **env)
 {
 	size_t	i;
-	int		in_quotes[2];
+	int		q[2];
 	int		adv;
 	char	*tmp;
 	char	*result;
 
-	if (!str)
-		return (NULL);
 	result = gc_strdup("");
-	in_quotes[0] = 0;
-	in_quotes[1] = 0;
+	q[0] = 0;
+	q[1] = 0;
 	i = 0;
-	while (str[i])
+	while (s[i])
 	{
-		if (((str[i] == '"') && !in_quotes[0])
-			|| (str[i] == '\'' && !in_quotes[1]))
-			handle_quotes((char *)str, &i, in_quotes, &result);
-		else if (str[i] == '$' && !in_quotes[0])
+		if (s[i] == '"' && !q[0])
 		{
-			tmp = (str[i + 1] == '?') ? expand_special_var(&adv, last_exit) \
-				: expand_normal_var(str + i + 1, &adv);
+			q[1] ^= 1;
+			result = gc_strjoin(result, "\"");
+			i++;
+		}
+		else if (s[i] == '\'' && !q[1])
+		{
+			q[0] ^= 1;
+			result = gc_strjoin(result, "\'");
+			i++;
+		}
+		else if (s[i] == '$' && !q[0])
+		{
+			tmp = expand_one(s + i + 1, &adv, last_exit, env);
 			result = gc_strjoin(result, tmp);
 			i += adv + 1;
 		}
 		else
-			result = gc_strjoin(result, gc_strndup(str + i++, 1));
+			result = gc_strjoin(result, gc_strndup(s + i++, 1));
 	}
 	return (result);
 }

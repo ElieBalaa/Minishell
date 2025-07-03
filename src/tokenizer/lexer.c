@@ -6,40 +6,31 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:18:34 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/01 14:13:02 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:13:46 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include <string.h>
 
-static void	add_tok(t_token **lst, const char *start, int len, int last_exit)
+static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 {
 	t_token	*node;
-	char	*tmp;
+	char	*raw;
+	char	*expd;
 	char	*text;
 
-	tmp = gc_strndup(start, len);
-	if (!tmp)
-		return ;
-	tmp = process_token_escapes(tmp);
-	if (!tmp)
-		return ;
-	tmp = expand_vars(tmp, last_exit);
-	if (!tmp)
-		return ;
-	tmp = qc_remove_quotes(tmp);
-	if (!tmp)
-		return ;
-	text = gc_strdup(tmp);
-	if (!text)
-		return ;
+	raw = process_token_escapes(gc_strndup(start, len));
+	expd = expand_vars(raw, sh->last_exit, sh->env);
+	text = qc_remove_quotes(expd);
+	free(raw);
+	free(expd);
 	node = malloc(sizeof(*node));
 	if (!node)
 		return (free(text));
 	node->text = text;
 	node->next = NULL;
-	if (*lst == NULL)
+	if (!*lst)
 		*lst = node;
 	else
 		tok_last(*lst)->next = node;
@@ -62,41 +53,43 @@ static void	advance_word(const char **ptr)
 	*ptr = p;
 }
 
-static void	process_operator(t_token **lst, const char **p, int last_exit)
+static void	process_operator(t_token **lst, t_minishell *sh, const char **p)
 {
-	add_tok(lst, *p, op_len(*p), last_exit);
-	*p += op_len(*p);
+	int	len;
+
+	len = op_len(*p);
+	add_tok(lst, sh, *p, len);
+	*p += len;
 }
 
-static void	process_word(t_token **lst, const char **p, int last_exit)
+static void	process_word(t_token **lst, t_minishell *sh, const char **p)
 {
 	const char	*start;
+	int			len;
 
 	start = *p;
 	advance_word(p);
-	add_tok(lst, start, *p - start, last_exit);
+	len = (int)(*p - start);
+	add_tok(lst, sh, start, len);
 }
 
-t_token	*tokenize(const char *line, int last_exit)
+t_token	*tokenize(const char *line, t_minishell *sh)
 {
 	t_token		*lst;
 	const char	*p;
 
-	lst = NULL;
 	if (!line)
 		return (NULL);
+	lst = NULL;
 	p = line;
 	while (*p)
 	{
 		if (is_space(*p))
-		{
 			p++;
-			continue ;
-		}
-		if (is_operator(*p))
-			process_operator(&lst, &p, last_exit);
+		else if (is_operator(*p))
+			process_operator(&lst, sh, &p);
 		else
-			process_word(&lst, &p, last_exit);
+			process_word(&lst, sh, &p);
 	}
 	return (lst);
 }

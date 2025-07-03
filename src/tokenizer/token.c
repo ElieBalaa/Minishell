@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:24:29 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/01 13:26:42 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:29:00 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ t_ast	*parse_segment(char **tokens, int n)
 	char	**argv;
 
 	node = init_ast_node();
-	argv = malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
+	argv = gc_malloc(sizeof(*argv) * (count_args(tokens, n) + 1));
 	if (!argv)
 		return (NULL);
 	fill_argv(tokens, n, argv, node);
