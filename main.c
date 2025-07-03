@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:12:42 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 18:02:46 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/03 18:51:47 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,12 @@ void init_minishell(t_minishell *sh, char **envp)
 
 	while (envp[n])
 		++n;
-	sh->env = malloc(sizeof(char *) * (n + 1));        /* plain malloc */
+	sh->env = malloc(sizeof(char *) * (n + 1));
 	if (!sh->env)
 		exit(EXIT_FAILURE);
 	for (size_t i = 0; i < n; ++i)
 	{
-		sh->env[i] = ft_strdup(envp[i]);               /* plain strdup */
-		if (!sh->env[i])
-			exit(EXIT_FAILURE);
+		sh->env[i] = ft_strdup(envp[i]);
 	}
 	sh->env[n] = NULL;
 	sh->last_exit = 0;
