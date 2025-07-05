@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:14 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 20:08:56 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 22:12:16 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ int	env_set(t_minishell *sh, const char *str)
 		{
 			free(sh->env[i]);
 			sh->env[i] = ft_strdup(str);
-			return (sh->env[i] ? 0 : 1);
+			if (sh->env[i])
+				return (0);
+			else
+				return (1);
 		}
 	}
 	new_env = malloc(sizeof(char *) * (i + 2));
@@ -44,75 +47,134 @@ int	env_set(t_minishell *sh, const char *str)
 	return (1);
 }
 
-static void	print_sorted_export(char **env)
+static void	print_env_entry(const char *e)
 {
-	char	**copy;
-	int		i;
-	char	*eq;
+	size_t	i;
 
-	copy = env_copy(env);
-	if (!copy)
-		return ;
-	sort_strings(copy);
 	i = 0;
-	while (copy[i])
-	{
-		eq = ft_strchr(copy[i], '=');
-		if (eq)
-		{
-			printf("declare -x %.*s=\"%s\"\n",
-				(int)(eq - copy[i]), copy[i], eq + 1);
-		}
-		else
-			printf("declare -x %s\n", copy[i]);
+	while (e[i] && e[i] != '=')
 		i++;
+	write(1, "declare -x ", 11);
+	write(1, e, i);
+	if (e[i] == '=')
+	{
+		write(1, "=\"", 2);
+		write(1, e + i + 1, strlen(e + i + 1));
+		write(1, "\"", 1);
 	}
-	free(copy);
+	write(1, "\n", 1);
+}
+
+// int	builtin_export(t_minishell *sh, char **av)
+// {
+// 	int			i;
+// 	int			err;
+// 	size_t		j;
+// 	char		*key;
+// 	size_t		len;
+// 	const char	*arg;
+
+// 	i = 1;
+// 	err = 0;
+// 	if (!av[i])
+// 	{
+// 		i = 0;
+// 		while (sh->env && sh->env[i])
+// 		{
+// 			print_env_entry(sh->env[i]);
+// 			i++;
+// 		}
+// 		return (0);
+// 	}
+// 	while (av[i])
+// 	{
+// 		arg = av[i];
+// 		len = 0;
+// 		while (arg[len] && arg[len] != '=')
+// 			len++;
+// 		key = malloc(len + 1);
+// 		if (!key)
+// 			return (1);
+// 		memcpy(key, arg, len);
+// 		key[len] = '\0';
+// 		if (!is_alpha_or_underscore(key[0]))
+// 			err = 1;
+// 		else
+// 		{
+// 			j = 1;
+// 			while (key[j])
+// 			{
+// 				if (!is_alnum_or_underscore(key[j]))
+// 				{
+// 					err = 1;
+// 					break ;
+// 				}
+// 				j++;
+// 			}
+// 		}
+// 		if (err)
+// 		{
+// 			printf("minishell: export: `%s': not a valid identifier\n", key);
+// 		}
+// 		else if (arg[len] == '=')
+// 		{
+// 			if (env_set(sh, arg) != 0)
+// 				err = 1;
+// 		}
+// 		free(key);
+// 		i++;
+// 	}
+// 	return (err);
+// }
+static int	process_export_arg(t_minishell *sh, const char *arg)
+{
+	size_t	len;
+	size_t	j;
+	char	*key;
+	int		err;
+
+	len = 0;
+	while (arg[len] && arg[len] != '=')
+		len++;
+	key = malloc(len + 1);
+	if (!key)
+		return (1);
+	ft_memcpy(key, arg, len);
+	key[len] = '\0';
+	err = !(ft_isalpha(key[0]) || key[0] == '_');
+	j = 0;
+	while (!err && key[++j])
+	{
+		if (!(ft_isalnum(key[j]) || key[j] == '_'))
+			err = 1;
+	}
+	if (err)
+		printf("minishell: export: `%s': not a valid identifier\n", key);
+	else if (arg[len] == '=')
+		if (env_set(sh, arg) != 0)
+			err = 1;
+	free(key);
+	return (err);
 }
 
 int	builtin_export(t_minishell *sh, char **av)
 {
-	int		i;
-	int		err;
-	char	*eq;
-	char	*key;
-	char	*value;
+	int	i;
+	int	err;
 
+	err = 0;
 	if (!av[1])
 	{
-		print_sorted_export(sh->env);
+		i = 0;
+		while (sh->env && sh->env[i])
+			print_env_entry(sh->env[i++]);
 		return (0);
 	}
-	err = 0;
 	i = 1;
 	while (av[i])
 	{
-		eq    = ft_strchr(av[i], '=');
-		key   = eq
-			? ft_strndup(av[i], eq - av[i])
-			: ft_strdup(av[i]);
-		value = eq
-			? eq + 1
-			: "";
-		if (!is_valid_key(key))
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(key, 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			err = 1;
-		}
-		else
-		{
-			if (eq && env_set(sh, av[i]) != 0)
-				err = 1;
-			else if (setenv(key, value, 1) != 0)
-			{
-				perror("minishell: setenv");
-				err = 1;
-			}
-		}
-		free(key);
-		i++;
+		err |= process_export_arg(sh, av[i]);
+		++i;
 	}
 	return (err);
 }

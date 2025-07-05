@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 21:36:54 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 17:03:45 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 22:09:05 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,16 @@ static int	var_length(const char *s)
 static char	*lookup_var(const char *name, char **env)
 {
 	size_t	n;
+	int		i;
 
 	n = ft_strlen(name);
-	for (int i = 0; env[i]; i++)
+	i = 0;
+	while (env[i])
+	{
 		if (!ft_strncmp(env[i], name, n) && env[i][n] == '=')
 			return (gc_strdup(env[i] + n + 1));
+		i++;
+	}
 	return (gc_strdup(""));
 }
 
@@ -88,4 +93,3 @@ char	*expand_vars(const char *s, int last_exit, char **env)
 	}
 	return (result);
 }
-

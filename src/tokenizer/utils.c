@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:33:19 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/30 16:57:01 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 22:09:30 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,24 +46,26 @@ int	count_args(char **tok, int n)
 
 int	quotes_balanced(const char *s)
 {
+	int	in_single;
+	int	in_double;
 	int	i;
-	int	singles;
-	int	doubles;
 
-	singles = 0;
-	doubles = 0;
 	if (!s)
 		return (1);
+	in_single = 0;
+	in_double = 0;
 	i = 0;
 	while (s[i])
 	{
-		if (s[i] == '\'')
-			singles++;
-		else if (s[i] == '"')
-			doubles++;
-		i++;
+		if (s[i] == '\'' && !in_double)
+			in_single ^= 1;
+		else if (s[i] == '"' && !in_single)
+			in_double ^= 1;
+		else if (s[i] == '\\' && s[i + 1] && !in_single)
+			++i;
+		++i;
 	}
-	return (singles % 2 == 0 && doubles % 2 == 0);
+	return (!in_single && !in_double);
 }
 
 char	*strip_surrounding_quotes(const char *str)
@@ -72,7 +74,7 @@ char	*strip_surrounding_quotes(const char *str)
 
 	if (!str)
 		return (NULL);
-	len = strlen(str);
+	len = ft_strlen(str);
 	if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"')
 			|| (str[0] == '\'' && str[len - 1] == '\'')))
 	{

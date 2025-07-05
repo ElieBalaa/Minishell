@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 16:10:15 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 20:10:12 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 22:05:09 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,10 @@ int	handle_export_arg(t_minishell *sh, char *arg)
 	int		ret;
 
 	eq = ft_strchr(arg, '=');
-	key = eq
-		? ft_strndup(arg, eq - arg)
-		: ft_strdup(arg);
+	if (eq)
+		key = ft_strndup(arg, eq - arg);
+	else
+		key = ft_strdup(arg);
 	if (!key)
 		return (1);
 	ret = 0;

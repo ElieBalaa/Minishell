@@ -6,13 +6,13 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 15:03:33 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 17:28:44 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:34:27 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char **tok_to_array(t_token *lst)
+char	**tok_to_array(t_token *lst)
 {
 	size_t	count;
 	size_t	i;

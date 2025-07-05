@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 12:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/01 14:12:24 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:39:28 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@ int	should_process_escape(char next_char, int in_single, int in_double)
 	if (in_single)
 		return (0);
 	if (in_double)
-		return (next_char == '"' || next_char == '\\');
-	return (next_char == '\\' || next_char == '"'
-		|| next_char == '\'' || next_char == ' ' || next_char == '|');
+		return (next_char == '"' || next_char == '\\' || next_char == '$');
+	return (1);
 }
 
 static void	handle_quote_char(const char *str, int *i, int *j, char *result)
@@ -67,6 +66,8 @@ char	*process_token_escapes(const char *str)
 	int		j;
 	char	*result;
 
+	if (!str)
+		return (NULL);
 	result = gc_malloc(ft_strlen(str) + 1);
 	if (!result)
 		return (NULL);

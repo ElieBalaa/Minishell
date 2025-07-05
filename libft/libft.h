@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:41:04 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/27 20:00:18 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 21:51:44 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 char	**ft_split_charset(char *str, char *charset);
 int		count_double_array(char **str);
+int		is_alpha_or_underscore(char c);
+int		is_alnum_or_underscore(char c);
 
 t_list	*ft_lstnew(void *content);
 t_list	*ft_lstlast(t_list *lst);

@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:07 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 18:46:34 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/04 22:06:14 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ int	builtin_echo(t_minishell *sh, char **av)
 	nl = 1;
 	i = 1;
 	if (av[1] && !ft_strcmp(av[1], "-n"))
-		(nl = 0, i = 2);
+	{
+		nl = 0;
+		i = 2;
+	}
 	while (av[i])
 	{
 		printf("%s", av[i]);
@@ -33,7 +36,6 @@ int	builtin_echo(t_minishell *sh, char **av)
 		printf("\n");
 	return (0);
 }
-
 
 // int  builtin_echo(t_minishell *sh, char **av)
 // {
