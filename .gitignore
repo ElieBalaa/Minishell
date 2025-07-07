@@ -1,0 +1,42 @@
+# Cursor IDE
+.cursor/
+*.cursor-*
+
+# VSCode
+.vscode/
+*.code-workspace
+.history/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Compiled files
+*.o
+*.a
+*.out
+minishell
+
+# Object directories
+obj/
+
+# Temporary files
+*~
+*.swp
+*.swo
+.tmp/
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# IDE specific
+.idea/
+*.sublime-* 
