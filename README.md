@@ -197,6 +197,7 @@ valgrind --leak-check=full ./minishell
 ## Contributors
 
 - **ElieBalaa** - Core implementation and architecture
+- **Omar Iskandarani** - Development and implementation
 - **42 School** - Project specifications and requirements
 
 ## License
