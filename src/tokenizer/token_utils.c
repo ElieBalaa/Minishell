@@ -25,9 +25,13 @@ int	is_operator(char c)
 
 int	op_len(const char *s)
 {
-	if ((s[0] == '<' || s[0] == '>') && s[1] == s[0])
+	if (!s)
+		return (0);
+	if ((s[0] == '<' && s[1] == '<') || (s[0] == '>' && s[1] == '>'))
 		return (2);
-	return (1);
+	if (s[0] == '<' || s[0] == '>' || s[0] == '|')
+		return (1);
+	return (0);
 }
 
 t_token	*tok_last(t_token *lst)
@@ -46,10 +50,18 @@ void	process_redir(char **tok, int *i, t_ast *node)
 		(*i)++;
 		node->input = ft_strdup(tok[*i]);
 	}
+	else if (ft_strcmp(tok[*i], "<<") == 0 && tok[*i + 1])
+	{
+		(*i)++;
+		node->heredoc_delim = ft_strdup(tok[*i]);
+		node->is_heredoc = 1;
+	}
 	else if ((ft_strcmp(tok[*i], ">") == 0
 			|| ft_strcmp(tok[*i], ">>") == 0) && tok[*i + 1])
 	{
 		(*i)++;
 		node->output = ft_strdup(tok[*i]);
+		if (ft_strcmp(tok[*i - 1], ">>") == 0)
+			node->append = 1;
 	}
 }

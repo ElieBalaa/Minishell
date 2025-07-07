@@ -42,6 +42,7 @@ SRCS      := main.c \
              src/gc/gc_tokenizer.c \
              src/gc/gc_whitespace.c \
              src/execution/executor.c \
+             src/execution/heredoc.c \
              src/execution/path_resolver.c \
              src/execution/process_manager.c
 

@@ -15,7 +15,7 @@
 int	is_redir(char *s)
 {
 	return (ft_strcmp(s, "<") == 0 || ft_strcmp(s, ">") == 0
-		|| ft_strcmp(s, ">>") == 0);
+		|| ft_strcmp(s, ">>") == 0 || ft_strcmp(s, "<<") == 0);
 }
 
 int	count_args(char **tok, int n)

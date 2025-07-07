@@ -46,7 +46,9 @@ typedef struct s_ast
 	char			**cmd;
 	char			*input;
 	char			*output;
+	char			*heredoc_delim;
 	int				append;
+	int				is_heredoc;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -113,6 +115,9 @@ char		*process_token_escapes(const char *str);
 int			execute_ast(t_minishell *sh, t_ast *ast);
 char		*resolve_command_path(const char *cmd);
 int			fork_and_execute(t_minishell *sh, const char *path, char **argv);
+
+/* heredoc */
+int			process_heredoc(t_minishell *sh, char *delimiter);
 
 /* builtins */
 int			builtin_exit(t_minishell *sh, char **args);

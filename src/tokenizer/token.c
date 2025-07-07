@@ -71,7 +71,9 @@ t_ast	*init_ast_node(void)
 	ast->right = NULL;
 	ast->input = NULL;
 	ast->output = NULL;
+	ast->heredoc_delim = NULL;
 	ast->append = 0;
+	ast->is_heredoc = 0;
 	return (ast);
 }
 
