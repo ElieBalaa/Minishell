@@ -16,11 +16,10 @@ int	builtin_cd(t_minishell *sh, char **av)
 {
 	char	*dir;
 
-	(void)sh;
 	if (av[1])
 		dir = av[1];
 	else
-		dir = getenv("HOME");
+		dir = get_env_var(sh, "HOME");
 	if (!dir)
 		return (ft_putstr_fd("minishell: cd: HOME not set\n", 2), 1);
 	if (chdir(dir) == -1)

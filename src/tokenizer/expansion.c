@@ -15,17 +15,14 @@
 static char	*lookup_env_var(t_minishell *sh, const char *p, int len)
 {
 	char	*val;
-	size_t	n;
 	int		i;
 
-	n = len;
 	i = 0;
 	while (sh->env[i])
 	{
-		if (!ft_strncmp(sh->env[i], ft_strndup(p, len), n)
-			&& sh->env[i][n] == '=')
+		if (!ft_strncmp(sh->env[i], p, len) && sh->env[i][len] == '=')
 		{
-			val = ft_strdup(sh->env[i] + n + 1);
+			val = ft_strdup(sh->env[i] + len + 1);
 			return (val);
 		}
 		i++;

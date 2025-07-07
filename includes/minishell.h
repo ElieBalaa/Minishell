@@ -132,6 +132,7 @@ void		sort_strings(char **arr);
 int			handle_export_arg(t_minishell *sh, char *arg);
 int			env_set(t_minishell *sh, const char *str);
 void		env_unset(t_minishell *sh, const char *key);
+char		*get_env_var(t_minishell *sh, const char *key);
 
 /* utils */
 int			is_quoted(char *str);
