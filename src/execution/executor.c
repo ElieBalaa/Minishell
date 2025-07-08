@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 14:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/02 00:15:46 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:29:07 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int	exec_one(t_minishell *sh, t_ast *n)
 	st = execute_builtin(sh, n->cmd);
 	if (st != -1)
 		return (st);
-	path = resolve_command_path(n->cmd[0]);
+	path = resolve_command_path(sh, n->cmd[0]);
 	if (!path)
 	{
 		printf("minishell: %s: command not found\n", n->cmd[0]);

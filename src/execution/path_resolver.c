@@ -6,7 +6,7 @@
 /*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 14:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 17:52:18 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/08 18:29:01 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,17 @@ static char	*search_in_path_dirs(char **path_dirs, const char *cmd)
 	return (NULL);
 }
 
-static char	*get_path_directories(void)
+static char	*get_path_directories(t_minishell *sh)
 {
 	char	*path_var;
 
-	path_var = getenv("PATH");
+	path_var = get_env_var(sh, "PATH");
 	if (!path_var)
 		return (NULL);
 	return (path_var);
 }
 
-char	*resolve_command_path(const char *cmd)
+char	*resolve_command_path(t_minishell *sh, const char *cmd)
 {
 	char	*path_var;
 	char	**path_dirs;
@@ -75,7 +75,7 @@ char	*resolve_command_path(const char *cmd)
 
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
-	path_var = get_path_directories();
+	path_var = get_path_directories(sh);
 	if (!path_var)
 		return (NULL);
 	path_dirs = ft_split(path_var, ':');

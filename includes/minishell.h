@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 17:30:32 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:28:43 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ typedef struct s_minishell
 {
 	char			**env;
 	int				last_exit;
+	int				is_interactive;
+	int				child_pid;
 	t_simple_gc		gc;
 }	t_minishell;
 
@@ -113,7 +115,7 @@ char		*process_token_escapes(const char *str);
 
 /* execution */
 int			execute_ast(t_minishell *sh, t_ast *ast);
-char		*resolve_command_path(const char *cmd);
+char		*resolve_command_path(t_minishell *sh, const char *cmd);
 int			fork_and_execute(t_minishell *sh, const char *path, char **argv);
 
 /* heredoc */
