@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
+/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 16:10:15 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 17:42:51 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/08 21:05:25 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ int	handle_export_arg(t_minishell *sh, char *arg)
 
 	eq = ft_strchr(arg, '=');
 	if (eq)
-		key = ft_strndup(arg, eq - arg);
+		key = gc_strndup(sh, arg, eq - arg);
 	else
-		key = ft_strdup(arg);
+		key = gc_strdup(sh, arg);
 	if (!key)
 		return (1);
 	ret = 0;
@@ -63,25 +63,7 @@ int	handle_export_arg(t_minishell *sh, char *arg)
 		ret = env_set(sh, arg);
 	else
 		ret = env_set(sh, key);
-	free(key);
 	return (ret);
-}
-
-char	**env_copy(char **env)
-{
-	int		n;
-	int		i;
-	char	**copy;
-
-	n = env_count(env);
-	copy = malloc(sizeof(*copy) * (n + 1));
-	if (!copy)
-		return (NULL);
-	i = -1;
-	while (++i < n)
-		copy[i] = env[i];
-	copy[n] = NULL;
-	return (copy);
 }
 
 void	sort_strings(char **arr)

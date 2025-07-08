@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:18:34 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 17:13:46 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 21:07:41 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,13 @@ static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 	char	*expd;
 	char	*text;
 
-	raw = process_token_escapes(gc_strndup(sh, start, len));
+	raw = process_token_escapes(sh, gc_strndup(sh, start, len));
 	expd = expand_vars(sh, raw);
-	text = qc_remove_quotes(expd);
-	free(raw);
-	free(expd);
-	node = malloc(sizeof(*node));
-	if (!node)
-		return (free(text));
+	// free(raw);
+	text = expd;
+	node = gc_malloc(sh, sizeof(*node));
+	// if (!node)
+	// 	return (free(text));
 	node->text = text;
 	node->next = NULL;
 	if (!*lst)
@@ -35,6 +34,7 @@ static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 	else
 		tok_last(*lst)->next = node;
 }
+
 
 static void	advance_word(const char **ptr)
 {

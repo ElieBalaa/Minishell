@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
+/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 18:28:43 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/08 20:56:38 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ typedef struct s_expand_ctx
 	const char	*s;
 	size_t		*i;
 	int			*q;
+	char         *last_result;
 }	t_expand_ctx;
 
 /* clean up */
@@ -111,7 +112,7 @@ char		*expand_vars(t_minishell *sh, const char *s);
 
 /* escape_utils */
 int			should_process_escape(char next_char, int in_single, int in_double);
-char		*process_token_escapes(const char *str);
+char		*process_token_escapes(t_minishell *sh, const char *str);
 
 /* execution */
 int			execute_ast(t_minishell *sh, t_ast *ast);

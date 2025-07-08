@@ -6,11 +6,30 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:07 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/04 22:06:14 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 19:29:42 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static void	parse_echo_flags(char **av, int *nl, int *i)
+{
+	int	j;
+
+	while (av[*i] && av[*i][0] == '-' && av[*i][1] == 'n')
+	{
+		j = 2;
+		while (av[*i][j] == 'n')
+			j++;
+		if (av[*i][j] == '\0')
+		{
+			*nl = 0;
+			(*i)++;
+		}
+		else
+			break ;
+	}
+}
 
 int	builtin_echo(t_minishell *sh, char **av)
 {
@@ -20,11 +39,7 @@ int	builtin_echo(t_minishell *sh, char **av)
 	(void)sh;
 	nl = 1;
 	i = 1;
-	if (av[1] && !ft_strcmp(av[1], "-n"))
-	{
-		nl = 0;
-		i = 2;
-	}
+	parse_echo_flags(av, &nl, &i);
 	while (av[i])
 	{
 		printf("%s", av[i]);
@@ -36,24 +51,3 @@ int	builtin_echo(t_minishell *sh, char **av)
 		printf("\n");
 	return (0);
 }
-
-// int  builtin_echo(t_minishell *sh, char **av)
-// {
-// 	int   i = 1, nl = 1;
-// 	char  *expanded;
-
-// 	(void)sh;
-// 	if (av[1] && !ft_strcmp(av[1], "-n"))
-// 		nl = 0, i = 2;
-// 	while (av[i])
-// 	{
-// 		expanded = expand_vars(av[i], sh->last_exit);
-// 		printf("%s", expanded);
-// 		if (av[i + 1])
-// 			putchar(' ');
-// 		++i;
-// 	}
-// 	if (nl)
-// 		putchar('\n');
-// 	return (0);
-// }

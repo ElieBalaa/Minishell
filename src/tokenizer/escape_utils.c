@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 12:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/04 15:39:28 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 20:55:08 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	handle_character(const char *str, t_escape_ctx *ctx)
 	}
 }
 
-char	*process_token_escapes(const char *str)
+char	*process_token_escapes(t_minishell *sh, const char *str)
 {
 	int				i;
 	int				j;
@@ -53,7 +53,7 @@ char	*process_token_escapes(const char *str)
 
 	if (!str)
 		return (NULL);
-	result = malloc(ft_strlen(str) + 1);
+	result = gc_malloc(sh, ft_strlen(str) + 1);
 	if (!result)
 		return (NULL);
 	i = 0;

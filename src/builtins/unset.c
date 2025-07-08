@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:19 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/03 17:17:01 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:45:53 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	env_unset(t_minishell *sh, const char *key)
 	char	**new;
 
 	old = env_count(sh->env);
-	new = malloc(sizeof(*new) * old);
+	new = gc_malloc(sh, sizeof(*new) * old);
 	if (!new)
 		return ;
 	i = 0;

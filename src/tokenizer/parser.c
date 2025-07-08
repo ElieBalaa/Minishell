@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 15:03:33 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/04 15:34:27 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/08 21:08:18 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	**tok_to_array(t_minishell *sh, t_token *lst)
 	i = 0;
 	while (lst)
 	{
-		arr[i] = ft_strdup(lst->text);
+		arr[i] = gc_strdup(sh, lst->text);
 		if (!arr[i])
 		{
 			cleanup_partial_array(arr, i);
