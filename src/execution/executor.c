@@ -74,6 +74,7 @@ static int	exec_one(t_minishell *sh, t_ast *n)
 		return (127);
 	}
 	st = fork_and_execute(sh, path, n->cmd);
+	free(path);
 	return (st);
 }
 

@@ -16,12 +16,13 @@ static int	extend_env_array(t_minishell *sh, const char *str, int i)
 {
 	char	**new_env;
 
-	new_env = gc_malloc(sh, sizeof(char *) * (i + 2));
+	new_env = malloc(sizeof(char *) * (i + 2));
 	if (!new_env)
 		return (1);
 	ft_memcpy(new_env, sh->env, sizeof(char *) * i);
 	new_env[i] = gc_strdup(sh, str);
 	new_env[i + 1] = NULL;
+	free(sh->env);
 	sh->env = new_env;
 	if (new_env[i])
 		return (0);

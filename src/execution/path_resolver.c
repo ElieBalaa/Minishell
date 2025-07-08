@@ -74,7 +74,7 @@ char	*resolve_command_path(t_minishell *sh, const char *cmd)
 	char	*full_path;
 
 	if (ft_strchr(cmd, '/'))
-		return (ft_strdup(cmd));
+		return (gc_strdup(sh, cmd));
 	path_var = get_path_directories(sh);
 	if (!path_var)
 		return (NULL);

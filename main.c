@@ -40,7 +40,7 @@ void	init_minishell(t_minishell *sh, char **envp)
 	n = 0;
 	while (envp[n])
 		n++;
-	sh->env = gc_malloc(sh, sizeof(char *) * (n + 1));
+	sh->env = malloc(sizeof(char *) * (n + 1));
 	if (!sh->env)
 		exit(EXIT_FAILURE);
 	i = 0;
@@ -93,5 +93,6 @@ int	main(int argc, char **argv, char **envp)
 	ft_putendl_fd("exit", 1);
 	clear_history();
 	gc_cleanup_all(&sh);
+	free(sh.env);
 	return (sh.last_exit);
 }

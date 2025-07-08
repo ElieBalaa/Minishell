@@ -20,7 +20,7 @@ void	env_unset(t_minishell *sh, const char *key)
 	char	**new;
 
 	old = env_count(sh->env);
-	new = gc_malloc(sh, sizeof(*new) * old);
+	new = malloc(sizeof(*new) * old);
 	if (!new)
 		return ;
 	i = 0;
@@ -30,8 +30,6 @@ void	env_unset(t_minishell *sh, const char *key)
 		if (!(ft_strncmp(sh->env[i], key, ft_strlen(key)) == 0
 				&& sh->env[i][ft_strlen(key)] == '='))
 			new[j++] = sh->env[i];
-		else
-			free(sh->env[i]);
 		i++;
 	}
 	new[j] = NULL;
