@@ -23,15 +23,18 @@ static void	child_process(const char *path, char **argv, char **envp)
 	}
 }
 
-static int	parent_process(pid_t pid)
+static int	parent_process(t_minishell *sh, pid_t pid)
 {
 	int	status;
 
+	sh->child_pid = pid;
 	if (waitpid(pid, &status, 0) == -1)
 	{
 		perror("minishell: waitpid");
+		sh->child_pid = 0;
 		return (1);
 	}
+	sh->child_pid = 0;
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
@@ -53,5 +56,5 @@ int	fork_and_execute(t_minishell *sh, const char *path, char **argv)
 	}
 	if (pid == 0)
 		child_process(path, argv, sh->env);
-	return (parent_process(pid));
+	return (parent_process(sh, pid));
 }
