@@ -49,4 +49,12 @@ test_*
 *_test
 *_tests
 *.log
+*.sh
+*.txt
+
+# Test files and directories
+test_*
+*_test
+*_tests
+*.log
 *.sh 
