@@ -42,4 +42,11 @@ obj/
 *.sublime-*
 
 # Memory leak output files
-leak_output.log 
+leak_output.log
+
+# Test files and directories
+test_*
+*_test
+*_tests
+*.log
+*.sh 
