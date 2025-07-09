@@ -103,6 +103,15 @@ typedef struct s_pipeline_args
 	t_minishell	*sh;
 }	t_pipeline_args;
 
+typedef struct s_child_args
+{
+	const char	*path;
+	char		**argv;
+	char		**envp;
+	t_minishell	*sh;
+	t_ast		*node;
+}	t_child_args;
+
 /* clean up */
 void		ft_free_split(char **str);
 void		free_tokens(t_token **tokens);
@@ -140,10 +149,14 @@ char		*process_token_escapes(t_minishell *sh, const char *str);
 /* execution */
 int			execute_ast(t_minishell *sh, t_ast *ast);
 char		*resolve_command_path(t_minishell *sh, const char *cmd);
-int			fork_and_execute(t_minishell *sh, const char *path, char **argv);
+int			fork_and_execute(t_minishell *sh, const char *path,
+				char **argv, t_ast *node);
+int			setup_input_redirect(t_minishell *sh, t_ast *node);
 
 /* heredoc */
 int			process_heredoc(t_minishell *sh, char *delimiter);
+char		*read_heredoc_line(int is_piped);
+int			check_delimiter_match(char *line, char *delimiter);
 
 /* builtins */
 int			builtin_exit(t_minishell *sh, char **args);
@@ -181,6 +194,8 @@ void		sig_handler(int sig);
 int			status_code(int wstatus);
 void		init_minishell(t_minishell *sh, char **envp);
 void		cleanup_shell(t_minishell *sh);
+void		*ft_realloc(void *ptr, size_t new_size);
+void		*ft_memcpy(void *dest, const void *src, size_t n);
 
 /* garbage collector */
 int			gc_init(t_minishell *sh);

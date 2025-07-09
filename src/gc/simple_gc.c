@@ -12,6 +12,7 @@
 
 #include "../../includes/minishell.h"
 
+/* Global variable for signal handling - necessary for emergency cleanup */
 static t_minishell	*g_shell_ctx = NULL;
 
 static void	cleanup_readline(void)

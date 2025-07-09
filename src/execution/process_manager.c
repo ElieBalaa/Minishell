@@ -14,9 +14,11 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static void	child_process(const char *path, char **argv, char **envp)
+static void	child_process(t_child_args *args)
 {
-	if (execve(path, argv, envp) == -1)
+	if (args->node && setup_input_redirect(args->sh, args->node) == -1)
+		exit(1);
+	if (execve(args->path, args->argv, args->envp) == -1)
 	{
 		perror("minishell: execve");
 		exit(127);
@@ -42,12 +44,19 @@ static int	parent_process(t_minishell *sh, pid_t pid)
 	return (1);
 }
 
-int	fork_and_execute(t_minishell *sh, const char *path, char **argv)
+int	fork_and_execute(t_minishell *sh, const char *path,
+		char **argv, t_ast *node)
 {
-	pid_t	pid;
+	pid_t			pid;
+	t_child_args	args;
 
 	if (!path || !argv)
 		return (1);
+	args.path = path;
+	args.argv = argv;
+	args.envp = sh->env;
+	args.sh = sh;
+	args.node = node;
 	pid = fork();
 	if (pid == -1)
 	{
@@ -55,6 +64,6 @@ int	fork_and_execute(t_minishell *sh, const char *path, char **argv)
 		return (1);
 	}
 	if (pid == 0)
-		child_process(path, argv, sh->env);
+		child_process(&args);
 	return (parent_process(sh, pid));
 }

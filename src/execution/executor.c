@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-static int	setup_heredoc_input(t_minishell *sh, t_ast *node)
+int	setup_heredoc_input(t_minishell *sh, t_ast *node)
 {
 	int	heredoc_fd;
 
@@ -33,7 +33,7 @@ static int	setup_heredoc_input(t_minishell *sh, t_ast *node)
 	return (0);
 }
 
-static int	setup_input_redirect(t_minishell *sh, t_ast *node)
+int	setup_input_redirect(t_minishell *sh, t_ast *node)
 {
 	int	input_fd;
 
@@ -62,8 +62,6 @@ static int	exec_one(t_minishell *sh, t_ast *n)
 
 	if (!n || !n->cmd || !n->cmd[0])
 		return (1);
-	if (setup_input_redirect(sh, n) == -1)
-		return (1);
 	st = execute_builtin(sh, n->cmd);
 	if (st != -1)
 		return (st);
@@ -73,7 +71,7 @@ static int	exec_one(t_minishell *sh, t_ast *n)
 		printf("minishell: %s: command not found\n", n->cmd[0]);
 		return (127);
 	}
-	st = fork_and_execute(sh, path, n->cmd);
+	st = fork_and_execute(sh, path, n->cmd, n);
 	free(path);
 	return (st);
 }

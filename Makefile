@@ -45,11 +45,14 @@ SRCS      := main.c \
              src/gc/gc_whitespace.c \
              src/execution/executor.c \
              src/execution/heredoc.c \
+             src/execution/heredoc_utils.c \
+             src/execution/heredoc_helpers.c \
              src/execution/path_resolver.c \
              src/execution/process_manager.c \
              src/utils/shell_utils.c \
              src/utils/init_shell.c \
-             src/utils/cleanup_shell.c
+             src/utils/cleanup_shell.c \
+             src/utils/utils.c
 
 # Objects
 OBJ_DIR   := obj

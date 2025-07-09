@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc.c                                          :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,35 +12,26 @@
 
 #include "../../includes/minishell.h"
 
-static void	heredoc_prompt(void)
+void	*ft_realloc(void *ptr, size_t new_size)
 {
-	write(STDOUT_FILENO, "heredoc> ", 9);
-}
+	void	*new_ptr;
+	size_t	old_size;
 
-int	process_heredoc(t_minishell *sh, char *delimiter)
-{
-	int		pipe_fd[2];
-	char	*line;
-	int		is_piped;
-
-	if (!sh || !delimiter || pipe(pipe_fd) == -1)
-		return (-1);
-	is_piped = !isatty(STDIN_FILENO);
-	while (1)
+	if (!ptr)
+		return (malloc(new_size));
+	if (new_size == 0)
 	{
-		if (!is_piped)
-			heredoc_prompt();
-		line = read_heredoc_line(is_piped);
-		if (!line)
-			break ;
-		if (check_delimiter_match(line, delimiter))
-		{
-			free(line);
-			break ;
-		}
-		write(pipe_fd[1], line, ft_strlen(line));
-		free(line);
+		free(ptr);
+		return (NULL);
 	}
-	close(pipe_fd[1]);
-	return (pipe_fd[0]);
+	new_ptr = malloc(new_size);
+	if (!new_ptr)
+		return (NULL);
+	old_size = ft_strlen((char *)ptr) + 1;
+	if (old_size < new_size)
+		ft_memcpy(new_ptr, ptr, old_size);
+	else
+		ft_memcpy(new_ptr, ptr, new_size);
+	free(ptr);
+	return (new_ptr);
 }
