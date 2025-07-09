@@ -35,17 +35,15 @@ int	append_line_to_input(char **full_input, char *line, size_t *full_size,
 	return (1);
 }
 
-/*
 char	*read_heredoc_line(int is_piped)
 {
 	char	*line;
 
 	if (is_piped)
-		line = get_next_line(STDIN_FILENO);
+		line = readline("> ");
 	else
 		line = readline("> ");
 	if (!line)
 		return (NULL);
 	return (line);
 }
-*/
