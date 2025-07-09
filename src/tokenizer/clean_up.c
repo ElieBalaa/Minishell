@@ -45,6 +45,8 @@ void	ft_free_split(char **str)
 
 void	free_ast(t_ast *node)
 {
+	int	i;
+
 	if (!node)
 		return ;
 	if (node->cmd)
@@ -53,8 +55,16 @@ void	free_ast(t_ast *node)
 		free(node->input);
 	if (node->output)
 		free(node->output);
-	if (node->heredoc_delim)
-		free(node->heredoc_delim);
+	if (node->heredoc_delims)
+	{
+		i = 0;
+		while (node->heredoc_delims[i])
+		{
+			free(node->heredoc_delims[i]);
+			i++;
+		}
+		free(node->heredoc_delims);
+	}
 	free_ast(node->left);
 	free_ast(node->right);
 	free(node);

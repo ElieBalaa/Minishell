@@ -43,6 +43,8 @@ t_token	*tok_last(t_token *lst)
 
 void	process_redir(char **tok, int *i, t_ast *node)
 {
+	int	count;
+
 	if (!tok || !tok[*i] || !node || *i < 0)
 		return ;
 	if (ft_strcmp(tok[*i], "<") == 0 && tok[*i + 1])
@@ -53,7 +55,22 @@ void	process_redir(char **tok, int *i, t_ast *node)
 	else if (ft_strcmp(tok[*i], "<<") == 0 && tok[*i + 1])
 	{
 		(*i)++;
-		node->heredoc_delim = ft_strdup(tok[*i]);
+		if (!node->heredoc_delims)
+		{
+			node->heredoc_delims = malloc(2 * sizeof(char *));
+			node->heredoc_delims[0] = ft_strdup(tok[*i]);
+			node->heredoc_delims[1] = NULL;
+		}
+		else
+		{
+			count = 0;
+			while (node->heredoc_delims[count])
+				count++;
+			node->heredoc_delims = ft_realloc(node->heredoc_delims,
+					(count + 2) * sizeof(char *));
+			node->heredoc_delims[count] = ft_strdup(tok[*i]);
+			node->heredoc_delims[count + 1] = NULL;
+		}
 		node->is_heredoc = 1;
 	}
 	else if ((ft_strcmp(tok[*i], ">") == 0

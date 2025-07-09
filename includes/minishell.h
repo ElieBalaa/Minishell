@@ -31,8 +31,8 @@ typedef struct s_gc_node
 
 typedef struct s_simple_gc
 {
-	t_gc_node	*head;
-	int			count;
+	t_gc_node			*head;
+	int					count;
 }	t_simple_gc;
 
 typedef struct s_token
@@ -43,73 +43,73 @@ typedef struct s_token
 
 typedef struct s_ast
 {
-	char			**cmd;
-	char			*input;
-	char			*output;
-	char			*heredoc_delim;
-	int				append;
-	int				is_heredoc;
-	struct s_ast	*left;
-	struct s_ast	*right;
+	char				**cmd;
+	char				*input;
+	char				*output;
+	char				**heredoc_delims;
+	int					append;
+	int					is_heredoc;
+	struct s_ast		*left;
+	struct s_ast		*right;
 }	t_ast;
 
 typedef struct s_minishell
 {
-	char			**env;
-	int				last_exit;
-	int				is_interactive;
-	int				child_pid;
-	t_simple_gc		gc;
+	char				**env;
+	int					last_exit;
+	int					is_interactive;
+	int					child_pid;
+	t_simple_gc			gc;
 }	t_minishell;
 
 typedef struct s_pipeline_ctx
 {
-	t_ast	**root;
-	t_ast	**cur;
+	t_ast				**root;
+	t_ast				**cur;
 }	t_pipeline_ctx;
 
 typedef struct s_escape_ctx
 {
-	int			*i;
-	int			*j;
-	char		*result;
-	int			*in_single;
-	int			*in_double;
+	int					*i;
+	int					*j;
+	char				*result;
+	int					*in_single;
+	int					*in_double;
 }	t_escape_ctx;
 
 typedef struct s_expand_ctx
 {
-	t_minishell	*sh;
-	const char	*s;
-	size_t		*i;
-	int			*q;
-	char		*last_result;
+	t_minishell			*sh;
+	const char			*s;
+	size_t				*i;
+	int					*q;
+	char				*last_result;
 }	t_expand_ctx;
 
 typedef struct s_fill_args
 {
-	char		**tokens;
-	int			n;
-	char		**argv;
-	t_ast		*node;
-	t_minishell	*sh;
+	char				**tokens;
+	int					n;
+	char				**argv;
+	t_ast				*node;
+	t_minishell			*sh;
 }	t_fill_args;
 
 typedef struct s_pipeline_args
 {
-	char		**w;
-	int			start;
-	int			i;
-	t_minishell	*sh;
+	char				**w;
+	int					start;
+	int					i;
+	t_minishell			*sh;
 }	t_pipeline_args;
 
 typedef struct s_child_args
 {
-	const char	*path;
-	char		**argv;
-	char		**envp;
-	t_minishell	*sh;
-	t_ast		*node;
+	const char			*path;
+	char				**argv;
+	char				**envp;
+	t_minishell			*sh;
+	t_ast				*node;
 }	t_child_args;
 
 /* clean up */
@@ -155,8 +155,18 @@ int			setup_input_redirect(t_minishell *sh, t_ast *node);
 
 /* heredoc */
 int			process_heredoc(t_minishell *sh, char *delimiter);
+int			process_multiple_heredocs(t_minishell *sh, char **delimiters,
+				int *pipe_fd);
 char		*read_heredoc_line(int is_piped);
 int			check_delimiter_match(char *line, char *delimiter);
+int			handle_interactive_loop(char **content, char *delimiter,
+				int is_last, int is_piped);
+int			handle_heredoc_loop(t_minishell *sh, char *delimiter,
+				int *pipe_fd, int is_piped);
+int			process_piped_content(char **content, char **current_pos,
+				char *delimiter);
+int			process_interactive_content(char **content, char *delimiter,
+				int is_last, int is_piped);
 
 /* builtins */
 int			builtin_exit(t_minishell *sh, char **args);
@@ -212,5 +222,22 @@ char		*extract_word(char *str, int *start);
 char		*gc_strjoin(t_minishell *sh, const char *s1, const char *s2);
 char		*qc_remove_quotes(const char *s);
 char		**split_whitespace(char *str);
+
+/* Heredoc related function prototypes */
+void		heredoc_prompt(void);
+char		*read_heredoc_line(int is_piped);
+int			append_line_to_input(char **full_input, char *line,
+				size_t *full_size, size_t *full_capacity);
+char		*extract_line(char **current_pos);
+int			append_content_line(char **content, char *line,
+				size_t *content_size, size_t *content_capacity);
+void		finalize_content(char **content, char **temp_content,
+				size_t *temp_size);
+int			append_temp_content(char **temp_content, char *line,
+				size_t *temp_size, size_t *temp_capacity);
+int			find_last_delimiter_index(char **delimiters);
+int			process_content(t_minishell *sh, char **delimiters,
+				int *pipe_fd, char *full_input);
+int			process_heredoc(t_minishell *sh, char *delimiter);
 
 #endif

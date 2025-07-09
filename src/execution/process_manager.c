@@ -14,9 +14,13 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+int	setup_output_redirect(t_ast *node);
+
 static void	child_process(t_child_args *args)
 {
 	if (args->node && setup_input_redirect(args->sh, args->node) == -1)
+		exit(1);
+	if (args->node && setup_output_redirect(args->node) == -1)
 		exit(1);
 	if (execve(args->path, args->argv, args->envp) == -1)
 	{

@@ -1,0 +1,83 @@
+\n===== Empty heredoc =====
+--- minishell ---
+minishell> cat << EOF
+minishell> exit
+--- bash ---
+\n===== Only delimiter =====
+--- minishell ---
+minishell> cat << END
+minishell> exit
+--- bash ---
+\n===== Special characters =====
+--- minishell ---
+minishell> cat << DELIM
+!@#$%^&*()_+
+[]{};:,.<>/?\|`~
+DELIM
+minishell> exit
+--- bash ---
+\n===== Variable expansion =====
+--- minishell ---
+minishell> VAR=hello
+minishell: VAR=hello: command not found
+minishell> cat << DELIM
+$VAR
+DELIM
+minishell> exit
+--- bash ---
+hello
+\n===== Quoted delimiter (no expansion) =====
+--- minishell ---
+minishell> VAR=hello
+minishell: VAR=hello: command not found
+minishell> cat << "DELIM"
+$VAR
+DELIM
+minishell> exit
+--- bash ---
+$VAR
+\n===== Multiple heredocs =====
+--- minishell ---
+minishell> cat << A && cat << B
+minishell> exit
+--- bash ---
+foo
+bar
+\n===== Heredoc with redirection =====
+--- minishell ---
+minishell> cat << END > heredoc_out.txt
+file output
+END
+cat heredoc_out.txt
+rm -f heredoc_out.txt
+minishell> exit
+--- bash ---
+file output
+\n===== Heredoc with pipe =====
+--- minishell ---
+minishell> cat << END | grep foo
+foo
+minishell> exit
+--- bash ---
+foo
+\n===== Missing delimiter =====
+--- minishell ---
+minishell> cat << END
+foo
+bar
+minishell> exit
+--- bash ---
+foo
+bar
+\n===== EOF in the middle =====
+--- minishell ---
+minishell> cat << END
+foo
+bar
+EOF
+END
+minishell> exit
+--- bash ---
+foo
+bar
+EOF

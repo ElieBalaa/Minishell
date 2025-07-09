@@ -12,37 +12,71 @@
 
 #include "../../includes/minishell.h"
 
-static int	is_delimiter_match(char *line, char *delimiter)
+int	process_interactive_content(char **content, char *delimiter,
+		int is_last, int is_piped)
 {
-	size_t	line_len;
-	size_t	delim_len;
-
-	if (!line || !delimiter)
-		return (0);
-	line_len = ft_strlen(line);
-	delim_len = ft_strlen(delimiter);
-	if (line_len > 0 && line[line_len - 1] == '\n')
-		line_len--;
-	return (line_len == delim_len
-		&& ft_strncmp(line, delimiter, delim_len) == 0);
+	*content = NULL;
+	if (!is_piped)
+		heredoc_prompt();
+	return (handle_interactive_loop(content, delimiter, is_last, is_piped));
 }
 
-static char	*expand_line_buffer(char *line, size_t *capacity)
+int	process_piped_content(char **content, char **current_pos,
+		char *delimiter)
 {
-	if (*capacity == 0)
-		*capacity = 64;
-	else
-		*capacity = *capacity * 2;
-	line = ft_realloc(line, *capacity);
-	return (line);
+	char	*delim_pos;
+	size_t	content_size;
+	size_t	content_capacity;
+	char	*line;
+
+	delim_pos = *current_pos;
+	content_size = 0;
+	content_capacity = 0;
+	*content = NULL;
+	while (*delim_pos)
+	{
+		line = extract_line(current_pos);
+		if (!line)
+			return (-1);
+		if (check_delimiter_match(line, delimiter))
+		{
+			free(line);
+			return (0);
+		}
+		if (!append_content_line(content, line, &content_size,
+				&content_capacity))
+		{
+			free(line);
+			return (-1);
+		}
+		free(line);
+	}
+	return (0);
 }
 
-int	check_delimiter_match(char *line, char *delimiter)
+int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
+		int *pipe_fd, int is_piped)
 {
-	return (is_delimiter_match(line, delimiter));
-}
+	char	*line;
+	char	*expanded_line;
 
-char	*expand_buffer(char *line, size_t *capacity)
-{
-	return (expand_line_buffer(line, capacity));
+	while (1)
+	{
+		if (!is_piped)
+			heredoc_prompt();
+		line = read_heredoc_line(is_piped);
+		if (!line)
+			break ;
+		if (check_delimiter_match(line, delimiter))
+		{
+			free(line);
+			break ;
+		}
+		expanded_line = expand_vars(sh, line);
+		write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
+		write(pipe_fd[1], "\n", 1);
+		free(line);
+		free(expanded_line);
+	}
+	return (0);
 }

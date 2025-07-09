@@ -1,0 +1,132 @@
+\n===== Newlines in delimiter =====
+--- minishell ---
+minishell> cat << "END
+minishell> "
+minishell> hello
+minishell: hello: command not found
+minishell> END
+minishell: END: command not found
+minishell> 
+minishell> exit
+--- bash ---
+hello
+END
+
+\n===== Spaces in delimiter =====
+--- minishell ---
+minishell> cat << "END OF DOC"
+hello
+END OF DOC
+minishell> exit
+--- bash ---
+hello
+\n===== Tabs in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+line1	tabbed
+line2	more	tabs
+EOF
+minishell> exit
+--- bash ---
+line1	tabbed
+line2	more	tabs
+\n===== Backslashes in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+line1\
+line2\\
+EOF
+minishell> exit
+--- bash ---
+line1line2\
+\n===== Quotes in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+"quoted text"
+'single quoted'
+EOF
+minishell> exit
+--- bash ---
+"quoted text"
+'single quoted'
+\n===== Command substitution in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+$(echo "command output")
+EOF
+minishell> exit
+--- bash ---
+command output
+\n===== Arithmetic expansion in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+$((2 + 2))
+EOF
+minishell> exit
+--- bash ---
+4
+\n===== Parameter expansion in heredoc =====
+--- minishell ---
+minishell> cat << EOF
+${VAR:-default}
+EOF
+minishell> exit
+--- bash ---
+default
+\n===== Here-string comparison =====
+--- minishell ---
+minishell> cat <<< "hello world"
+minishell> exit
+--- bash ---
+hello world
+\n===== Process substitution =====
+--- minishell ---
+minishell> cat <(echo "hello")
+minishell> exit
+--- bash ---
+hello
+\n===== Multiple redirections =====
+--- minishell ---
+minishell> cat << EOF 2>&1
+minishell> exit
+--- bash ---
+error and output
+\n===== Exec with heredoc =====
+--- minishell ---
+minishell> exec cat << EOF
+minishell: exec: command not found
+minishell> exec test
+minishell: exec: command not found
+minishell> EOF
+minishell: EOF: command not found
+minishell> exit
+--- bash ---
+exec test
+\n===== Function with heredoc =====
+--- minishell ---
+minishell> test_func() {
+minishell: test_func(): command not found
+minishell>     cat << EOF
+function heredoc
+EOF
+}
+test_func
+minishell> exit
+--- bash ---
+function heredoc
+\n===== Subshell with heredoc =====
+--- minishell ---
+minishell> (cat << EOF
+minishell: (cat: command not found
+minishell> subshell heredoc
+minishell: subshell: command not found
+minishell> EOF)
+minishell: EOF): command not found
+minishell> exit
+--- bash ---
+\n===== Background heredoc =====
+--- minishell ---
+minishell> cat << EOF &
+minishell> exit
+--- bash ---
+background test
