@@ -39,4 +39,7 @@ obj/
 
 # IDE specific
 .idea/
-*.sublime-* 
+*.sublime-*
+
+# Memory leak output files
+leak_output.log 
