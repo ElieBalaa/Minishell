@@ -21,6 +21,7 @@ LDLIBS    := -lreadline -lhistory -Llibft -lft
 # Sources
 SRCS      := main.c \
              src/tokenizer/expansion.c \
+             src/tokenizer/expansion_utils.c \
              src/tokenizer/parser.c \
              src/tokenizer/utils.c \
              src/tokenizer/clean_up.c \
@@ -38,13 +39,17 @@ SRCS      := main.c \
 			 src/builtins/pwd.c \
 			 src/builtins/execute_builtin.c \
              src/gc/simple_gc.c \
+             src/gc/gc_cleanup.c \
              src/gc/gc_malloc.c \
              src/gc/gc_tokenizer.c \
              src/gc/gc_whitespace.c \
              src/execution/executor.c \
              src/execution/heredoc.c \
              src/execution/path_resolver.c \
-             src/execution/process_manager.c
+             src/execution/process_manager.c \
+             src/utils/shell_utils.c \
+             src/utils/init_shell.c \
+             src/utils/cleanup_shell.c
 
 # Objects
 OBJ_DIR   := obj

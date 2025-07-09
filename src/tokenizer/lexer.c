@@ -22,11 +22,8 @@ static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 
 	raw = process_token_escapes(sh, gc_strndup(sh, start, len));
 	expd = expand_vars(sh, raw);
-	// free(raw);
 	text = expd;
 	node = gc_malloc(sh, sizeof(*node));
-	// if (!node)
-	// 	return (free(text));
 	node->text = text;
 	node->next = NULL;
 	if (!*lst)
@@ -34,7 +31,6 @@ static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 	else
 		tok_last(*lst)->next = node;
 }
-
 
 static void	advance_word(const char **ptr)
 {

@@ -15,13 +15,25 @@
 static int	extend_env_array(t_minishell *sh, const char *str, int i)
 {
 	char	**new_env;
+	int		j;
 
 	new_env = malloc(sizeof(char *) * (i + 2));
 	if (!new_env)
 		return (1);
-	ft_memcpy(new_env, sh->env, sizeof(char *) * i);
-	new_env[i] = gc_strdup(sh, str);
+	j = 0;
+	while (j < i)
+	{
+		new_env[j] = ft_strdup(sh->env[j]);
+		j++;
+	}
+	new_env[i] = ft_strdup(str);
 	new_env[i + 1] = NULL;
+	j = 0;
+	while (j < i)
+	{
+		free(sh->env[j]);
+		j++;
+	}
 	free(sh->env);
 	sh->env = new_env;
 	if (new_env[i])
@@ -42,8 +54,8 @@ int	env_set(t_minishell *sh, const char *str)
 	{
 		if (!ft_strncmp(sh->env[i], str, equal - str + 1))
 		{
-			// free(sh->env[i]);
-			sh->env[i] = gc_strdup(sh, str);
+			free(sh->env[i]);
+			sh->env[i] = ft_strdup(str);
 			if (sh->env[i])
 				return (0);
 			else
@@ -101,15 +113,22 @@ static int	process_export_arg(t_minishell *sh, const char *arg)
 
 int	builtin_export(t_minishell *sh, char **av)
 {
-	int	i;
-	int	err;
+	int		i;
+	int		err;
+	char	**sorted_env;
 
 	err = 0;
 	if (!av[1])
 	{
+		sorted_env = env_copy(sh->env);
+		if (!sorted_env)
+			return (1);
+		sort_strings(sorted_env);
 		i = 0;
-		while (sh->env && sh->env[i])
-			print_env_entry(sh->env[i++]);
+		while (sorted_env && sorted_env[i])
+			print_env_entry(sorted_env[i++]);
+		free_env_strings(sorted_env);
+		free(sorted_env);
 		return (0);
 	}
 	i = 1;

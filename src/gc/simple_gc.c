@@ -58,23 +58,3 @@ int	gc_add(t_minishell *sh, void *ptr)
 	sh->gc.count++;
 	return (1);
 }
-
-void	gc_cleanup_all(t_minishell *sh)
-{
-	t_gc_node	*current;
-	t_gc_node	*next;
-
-	if (!sh)
-		return ;
-	current = sh->gc.head;
-	while (current)
-	{
-		next = current->next;
-		if (current->ptr)
-			free(current->ptr);
-		free(current);
-		current = next;
-	}
-	sh->gc.head = NULL;
-	sh->gc.count = 0;
-}

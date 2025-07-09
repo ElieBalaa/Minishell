@@ -85,4 +85,3 @@ char	*resolve_command_path(t_minishell *sh, const char *cmd)
 	ft_free_split(path_dirs);
 	return (full_path);
 }
-

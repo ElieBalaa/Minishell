@@ -12,47 +12,41 @@
 
 #include "../../includes/minishell.h"
 
-static char	*lookup_env_var(t_minishell *sh, const char *name, int len)
+static void	handle_quotes(const char *s, size_t *i, int *in_s, int *in_d)
 {
-	int	i;
-
-	i = 0;
-	while (sh->env[i])
-	{
-		if (!ft_strncmp(sh->env[i], name, len)
-			&& sh->env[i][len] == '=')
-			return (gc_strdup(sh, sh->env[i] + len + 1));
-		i++;
-	}
-	return (gc_strdup(sh, ""));
+	if (s[*i] == '\'' && !*in_d)
+		*in_s ^= 1;
+	else if (s[*i] == '"' && !*in_s)
+		*in_d ^= 1;
+	(*i)++;
 }
 
-static char	*expand_one(t_minishell *sh, const char *p, int *adv)
-{
-	char	*val;
-
-	if (*p == '?')
-	{
-		*adv = 1;
-		return (ft_itoa(sh->last_exit));
-	}
-	if (!ft_isalpha(*p) && *p != '_')
-	{
-		*adv = 0;
-		return (gc_strdup(sh, "$"));
-	}
-	*adv = 1;
-	while (p[*adv] && (ft_isalnum(p[*adv]) || p[*adv] == '_'))
-		(*adv)++;
-	val = lookup_env_var(sh, p, *adv);
-	return (val);
-}
-
-char	*expand_vars(t_minishell *sh, const char *s)
+static char	*process_expansion_loop(t_minishell *sh, const char *s, char *res)
 {
 	size_t	i;
 	int		in_s;
 	int		in_d;
+
+	in_s = 0;
+	in_d = 0;
+	i = 0;
+	while (s[i])
+	{
+		if ((s[i] == '\'' && !in_d) || (s[i] == '"' && !in_s))
+			handle_quotes(s, &i, &in_s, &in_d);
+		else if (s[i] == '$' && !in_s)
+			res = handle_dollar(sh, s, &i, res);
+		else
+		{
+			res = handle_char(sh, s[i], res);
+			i++;
+		}
+	}
+	return (res);
+}
+
+char	*expand_vars(t_minishell *sh, const char *s)
+{
 	char	*res;
 
 	if (!sh || !s)
@@ -60,36 +54,6 @@ char	*expand_vars(t_minishell *sh, const char *s)
 	res = gc_strdup(sh, "");
 	if (!res)
 		return (NULL);
-	in_s = in_d = 0;
-	i = 0;
-	while (s[i])
-	{
-		if (s[i] == '\'' && !in_d)
-		{
-			in_s ^= 1;
-			i++;
-		}
-		else if (s[i] == '"' && !in_s)
-		{
-			in_d ^= 1;
-			i++;
-		}
-		else if (s[i] == '$' && !in_s)
-		{
-			int	adv;
-			char	*val = expand_one(sh, s + i + 1, &adv);
-			char	*tmp = gc_strjoin(sh, res, val);
-			res = tmp;
-			i += adv + 1;
-		}
-		else
-		{
-			char	ch[2] = {s[i], '\0'};
-			char	*tmp = gc_strjoin(sh, res, ch);
-			// free(res);
-			res = tmp;
-			i++;
-		}
-	}
+	res = process_expansion_loop(sh, s, res);
 	return (res);
 }

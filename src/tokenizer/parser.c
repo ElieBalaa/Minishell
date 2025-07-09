@@ -58,7 +58,7 @@ t_ast	*parse_line(const char *line, t_minishell *sh)
 	words = tok_to_array(sh, tok);
 	if (!words)
 		return (NULL);
-	return (parse_pipeline(words));
+	return (parse_pipeline(words, sh));
 }
 
 const char	*skip_quotes(const char *p)

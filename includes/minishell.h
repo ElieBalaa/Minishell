@@ -83,8 +83,25 @@ typedef struct s_expand_ctx
 	const char	*s;
 	size_t		*i;
 	int			*q;
-	char         *last_result;
+	char		*last_result;
 }	t_expand_ctx;
+
+typedef struct s_fill_args
+{
+	char		**tokens;
+	int			n;
+	char		**argv;
+	t_ast		*node;
+	t_minishell	*sh;
+}	t_fill_args;
+
+typedef struct s_pipeline_args
+{
+	char		**w;
+	int			start;
+	int			i;
+	t_minishell	*sh;
+}	t_pipeline_args;
 
 /* clean up */
 void		ft_free_split(char **str);
@@ -92,6 +109,7 @@ void		free_tokens(t_token **tokens);
 void		free_ast(t_ast *node);
 void		free_toklist(t_token *lst);
 char		*ft_strndup(const char *s, int n);
+void		gc_free_nodes(t_minishell *sh);
 
 /* tokenization */
 t_token		**split_on_space(char *str);
@@ -101,14 +119,19 @@ char		**tok_to_array(t_minishell *sh, t_token *lst);
 const char	*skip_quotes(const char *p);
 
 /* parsing */
-t_ast		*parse_pipeline(char **words);
-t_ast		*parse_segment(char **tokens, int n);
+t_ast		*parse_pipeline(char **words, t_minishell *sh);
+t_ast		*parse_segment(char **tokens, int n, t_minishell *sh);
 t_ast		*parse_line(const char *line, t_minishell *sh);
-t_ast		*init_ast_node(void);
+t_ast		*init_ast_node(t_minishell *sh);
 int			is_pipeline_end(char **w, int i);
 
 /* expansion */
 char		*expand_vars(t_minishell *sh, const char *s);
+char		*lookup_env_var(t_minishell *sh, const char *name, int len);
+char		*expand_one(t_minishell *sh, const char *p, int *adv);
+char		*handle_dollar(t_minishell *sh, const char *s,
+				size_t *i, char *res);
+char		*handle_char(t_minishell *sh, const char s, char *res);
 
 /* escape_utils */
 int			should_process_escape(char next_char, int in_single, int in_double);
@@ -137,6 +160,7 @@ int			is_valid_key(const char *s);
 int			env_count(char **e);
 char		**env_copy(char **env);
 void		sort_strings(char **arr);
+void		free_env_strings(char **env);
 int			handle_export_arg(t_minishell *sh, char *arg);
 int			env_set(t_minishell *sh, const char *str);
 void		env_unset(t_minishell *sh, const char *key);
@@ -153,10 +177,15 @@ int			quotes_balanced(const char *s);
 char		*strip_surrounding_quotes(const char *str);
 void		process_redir(char **tok, int *i, t_ast *node);
 int			ft_tokensize(t_token *lst);
+void		sig_handler(int sig);
+int			status_code(int wstatus);
+void		init_minishell(t_minishell *sh, char **envp);
+void		cleanup_shell(t_minishell *sh);
 
 /* garbage collector */
 int			gc_init(t_minishell *sh);
 void		gc_cleanup_all(t_minishell *sh);
+void		gc_free_nodes(t_minishell *sh);
 void		*gc_malloc(t_minishell *sh, size_t size);
 char		*gc_strdup(t_minishell *sh, const char *s);
 char		*gc_strndup(t_minishell *sh, const char *s, int n);

@@ -12,27 +12,41 @@
 
 #include "../../includes/minishell.h"
 
-void	env_unset(t_minishell *sh, const char *key)
+static char	**create_new_env(t_minishell *sh, const char *key, int old)
 {
-	int		old;
 	int		i;
 	int		j;
 	char	**new;
 
-	old = env_count(sh->env);
 	new = malloc(sizeof(*new) * old);
 	if (!new)
-		return ;
+		return (NULL);
 	i = 0;
 	j = 0;
 	while (sh->env[i])
 	{
 		if (!(ft_strncmp(sh->env[i], key, ft_strlen(key)) == 0
 				&& sh->env[i][ft_strlen(key)] == '='))
-			new[j++] = sh->env[i];
+		{
+			new[j] = ft_strdup(sh->env[i]);
+			j++;
+		}
 		i++;
 	}
 	new[j] = NULL;
+	return (new);
+}
+
+void	env_unset(t_minishell *sh, const char *key)
+{
+	int		old;
+	char	**new;
+
+	old = env_count(sh->env);
+	new = create_new_env(sh, key, old);
+	if (!new)
+		return ;
+	free_env_strings(sh->env);
 	free(sh->env);
 	sh->env = new;
 }

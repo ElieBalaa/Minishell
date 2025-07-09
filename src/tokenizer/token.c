@@ -12,58 +12,32 @@
 
 #include "../../includes/minishell.h"
 
-static void	fill_segment_args(char **tokens, int n, char **argv, t_ast *node)
+static void	fill_segment_args(t_fill_args *args)
 {
 	int	i;
 	int	arg_idx;
 
 	i = 0;
 	arg_idx = 0;
-	while (i < n && ft_strcmp(tokens[i], "|"))
+	while (i < args->n && ft_strcmp(args->tokens[i], "|"))
 	{
-		if (is_redir(tokens[i]))
-			process_redir(tokens, &i, node);
+		if (is_redir(args->tokens[i]))
+			process_redir(args->tokens, &i, args->node);
 		else
 		{
-			argv[arg_idx] = ft_strdup(tokens[i]);
+			args->argv[arg_idx] = gc_strdup(args->sh, args->tokens[i]);
 			arg_idx++;
 		}
 		i++;
 	}
-	argv[arg_idx] = NULL;
+	args->argv[arg_idx] = NULL;
 }
 
-t_ast	*parse_segment(char **tokens, int n)
-{
-	t_ast	*node;
-	char	**argv;
-	int		argc;
-
-	node = init_ast_node();
-	if (!node)
-		return (NULL);
-	argc = count_args(tokens, n);
-	if (argc == 0)
-	{
-		free(node);
-		return (NULL);
-	}
-	argv = malloc(sizeof(*argv) * (argc + 1));
-	if (!argv)
-	{
-		free(node);
-		return (NULL);
-	}
-	fill_segment_args(tokens, n, argv, node);
-	node->cmd = argv;
-	return (node);
-}
-
-t_ast	*init_ast_node(void)
+t_ast	*init_ast_node(t_minishell *sh)
 {
 	t_ast	*ast;
 
-	ast = malloc(sizeof(t_ast));
+	ast = gc_malloc(sh, sizeof(t_ast));
 	if (!ast)
 		return (NULL);
 	ast->cmd = NULL;
@@ -77,45 +51,74 @@ t_ast	*init_ast_node(void)
 	return (ast);
 }
 
-static void	process_pipeline_segment(char **w, int start, int i,
+t_ast	*parse_segment(char **tokens, int n, t_minishell *sh)
+{
+	t_ast		*node;
+	char		**argv;
+	int			argc;
+	t_fill_args	args;
+
+	node = init_ast_node(sh);
+	if (!node)
+		return (NULL);
+	argc = count_args(tokens, n);
+	if (argc == 0)
+	{
+		free(node);
+		return (NULL);
+	}
+	argv = gc_malloc(sh, sizeof(*argv) * (argc + 1));
+	if (!argv)
+	{
+		free(node);
+		return (NULL);
+	}
+	args = (t_fill_args){tokens, n, argv, node, sh};
+	fill_segment_args(&args);
+	node->cmd = argv;
+	return (node);
+}
+
+static void	process_pipeline_segment(t_pipeline_args *args,
 	t_pipeline_ctx *ctx)
 {
 	int		is_not_pipe;
 	int		count;
 
-	is_not_pipe = (ft_strcmp(w[i], "|") != 0);
-	count = i - start + is_not_pipe;
+	is_not_pipe = (ft_strcmp(args->w[args->i], "|") != 0);
+	count = args->i - args->start + is_not_pipe;
 	if (!*(ctx->root))
 	{
-		*(ctx->root) = parse_segment(w + start, count);
+		*(ctx->root) = parse_segment(args->w + args->start, count, args->sh);
 		*(ctx->cur) = *(ctx->root);
 	}
 	else
 	{
-		(*(ctx->cur))->right = parse_segment(w + start, count);
+		(*(ctx->cur))->right = parse_segment(args->w + args->start,
+				count, args->sh);
 		*(ctx->cur) = (*(ctx->cur))->right;
 	}
 }
 
-t_ast	*parse_pipeline(char **w)
+t_ast	*parse_pipeline(char **w, t_minishell *sh)
 {
 	int				i;
 	int				start;
 	t_ast			*root;
-	t_ast			*cur;
 	t_pipeline_ctx	ctx;
+	t_pipeline_args	args;
 
 	i = 0;
 	start = 0;
 	root = NULL;
-	cur = NULL;
 	ctx.root = &root;
-	ctx.cur = &cur;
+	ctx.cur = &root;
 	while (w[i])
 	{
 		if (is_pipeline_end(w, i))
 		{
-			process_pipeline_segment(w, start, i, &ctx);
+			args = (t_pipeline_args){w, start, i, sh};
+			process_pipeline_segment(&args, &ctx);
 			start = i + 1;
 		}
 		i++;

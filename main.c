@@ -12,48 +12,6 @@
 
 #include "includes/minishell.h"
 
-void	sig_handler(int sig)
-{
-	if (sig == SIGINT)
-	{
-		ft_putchar_fd('\n', 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
-
-int	status_code(int wstatus)
-{
-	if (WIFEXITED(wstatus))
-		return (WEXITSTATUS(wstatus));
-	if (WIFSIGNALED(wstatus))
-		return (128 + WTERMSIG(wstatus));
-	return (wstatus);
-}
-
-void	init_minishell(t_minishell *sh, char **envp)
-{
-	size_t	n;
-	size_t	i;
-
-	n = 0;
-	while (envp[n])
-		n++;
-	sh->env = malloc(sizeof(char *) * (n + 1));
-	if (!sh->env)
-		exit(EXIT_FAILURE);
-	i = 0;
-	while (i < n)
-	{
-		sh->env[i] = gc_strdup(sh, envp[i]);
-		i++;
-	}
-	sh->env[n] = NULL;
-	sh->last_exit = 0;
-	gc_init(sh);
-}
-
 static void	process_line(t_minishell *sh, char *line)
 {
 	t_ast	*ast;
@@ -71,6 +29,12 @@ static void	process_line(t_minishell *sh, char *line)
 	}
 }
 
+static void	setup_signals(void)
+{
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	sh;
@@ -79,8 +43,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_minishell(&sh, envp);
-	signal(SIGINT, sig_handler);
-	signal(SIGQUIT, SIG_IGN);
+	setup_signals();
 	line = readline("minishell> ");
 	while (line)
 	{
@@ -90,9 +53,6 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 		line = readline("minishell> ");
 	}
-	ft_putendl_fd("exit", 1);
-	clear_history();
-	gc_cleanup_all(&sh);
-	free(sh.env);
+	cleanup_shell(&sh);
 	return (sh.last_exit);
 }
