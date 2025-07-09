@@ -17,68 +17,59 @@ void	heredoc_prompt(void)
 	write(STDOUT_FILENO, "heredoc> ", 9);
 }
 
-static char	*init_full_input(int is_piped, size_t *full_size,
-			size_t *full_capacity)
-{
-	char	*full_input;
-	char	*line;
-
-	full_input = NULL;
-	*full_size = 0;
-	*full_capacity = 0;
-	if (is_piped)
-	{
-		while (1)
-		{
-			line = read_heredoc_line(is_piped);
-			if (line == NULL)
-				break ;
-			if (!append_line_to_input(&full_input, line, full_size,
-					full_capacity))
-			{
-				free(line);
-				return (NULL);
-			}
-			free(line);
-		}
-	}
-	return (full_input);
-}
-
 int	find_last_delimiter_index(char **delimiters)
 {
 	int	last_index;
 
+	if (!delimiters)
+		return (-1);
 	last_index = 0;
 	while (delimiters[last_index])
 		last_index++;
-	last_index--;
-	return (last_index);
+	return (last_index - 1);
 }
 
 int	process_multiple_heredocs(t_minishell *sh, char **delimiters,
-			int *pipe_fd)
+		int *pipe_fd)
 {
-	size_t	full_size;
-	size_t	full_capacity;
-	char	*full_input;
+	int		i;
+	char	*line;
+	char	*expanded_line;
 
-	full_input = init_full_input(!isatty(STDIN_FILENO), &full_size,
-			&full_capacity);
-	if (!isatty(STDIN_FILENO) && !full_input)
+	if (!sh || !delimiters || !pipe_fd)
 		return (-1);
-	return (process_content(sh, delimiters, pipe_fd, full_input));
+	i = 0;
+	while (delimiters[i])
+	{
+		while (1)
+		{
+			heredoc_prompt();
+			line = read_heredoc_line(0);
+			if (!line)
+				return (-1);
+			if (check_delimiter_match(line, delimiters[i]))
+			{
+				free(line);
+				break ;
+			}
+			expanded_line = expand_vars(sh, line);
+			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
+			write(pipe_fd[1], "\n", 1);
+			free(line);
+			free(expanded_line);
+		}
+		i++;
+	}
+	return (0);
 }
 
 int	process_heredoc(t_minishell *sh, char *delimiter)
 {
 	int	pipe_fd[2];
-	int	is_piped;
 
 	if (!sh || !delimiter || pipe(pipe_fd) == -1)
 		return (-1);
-	is_piped = !isatty(STDIN_FILENO);
-	handle_heredoc_loop(sh, delimiter, pipe_fd, is_piped);
+	handle_heredoc_loop(sh, delimiter, pipe_fd, 0);
 	close(pipe_fd[1]);
 	return (pipe_fd[0]);
 }

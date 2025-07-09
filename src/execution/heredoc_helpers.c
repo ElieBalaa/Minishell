@@ -29,11 +29,13 @@ int	process_piped_content(char **content, char **current_pos,
 	size_t	content_capacity;
 	char	*line;
 
+	if (!content || !current_pos || !delimiter)
+		return (-1);
 	delim_pos = *current_pos;
 	content_size = 0;
 	content_capacity = 0;
 	*content = NULL;
-	while (*delim_pos)
+	while (delim_pos && *delim_pos)
 	{
 		line = extract_line(current_pos);
 		if (!line)
@@ -60,6 +62,8 @@ int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
 	char	*line;
 	char	*expanded_line;
 
+	if (!sh || !delimiter || !pipe_fd)
+		return (-1);
 	while (1)
 	{
 		if (!is_piped)
@@ -73,10 +77,13 @@ int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
 			break ;
 		}
 		expanded_line = expand_vars(sh, line);
-		write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
-		write(pipe_fd[1], "\n", 1);
+		if (expanded_line)
+		{
+			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
+			write(pipe_fd[1], "\n", 1);
+			free(expanded_line);
+		}
 		free(line);
-		free(expanded_line);
 	}
 	return (0);
 }
