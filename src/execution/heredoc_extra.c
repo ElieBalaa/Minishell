@@ -59,9 +59,26 @@ char	*read_heredoc_line(int is_piped)
 	}
 	else
 	{
-		line = readline("> ");
+		line = readline("");
 		if (!line)
 			return (NULL);
 		return (line);
 	}
+}
+
+int	process_loop_line(t_delimiter_content_params *params,
+		char *line, char *clean_delim, int is_quoted)
+{
+	if (check_delimiter_match(line, clean_delim))
+	{
+		free(line);
+		return (1);
+	}
+	if (params->is_last && handle_heredoc_line(params, line, is_quoted) == -1)
+	{
+		free(line);
+		return (-1);
+	}
+	free(line);
+	return (0);
 }

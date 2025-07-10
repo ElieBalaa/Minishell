@@ -84,3 +84,19 @@ int	process_content(t_minishell *sh, char **delimiters, int *pipe_fd,
 	}
 	return (0);
 }
+
+int	handle_heredoc_line(t_delimiter_content_params *params,
+		char *line, int is_quoted)
+{
+	if (!is_quoted)
+	{
+		if (!append_expanded_line(params->sh, line, params->vars))
+			return (-1);
+	}
+	else
+	{
+		if (!append_raw_line(params->sh, line, params->vars))
+			return (-1);
+	}
+	return (0);
+}

@@ -12,59 +12,24 @@
 
 #include "../../includes/minishell.h"
 
-static int	is_originally_quoted(const char *delimiter)
-{
-	if (delimiter && delimiter[0] == '\'')
-		return (1);
-	return (0);
-}
-
-static int	handle_heredoc_line(t_delimiter_content_params *params,
-		char *line, int is_quoted)
-{
-	if (!is_quoted)
-	{
-		if (!append_expanded_line(params->sh, line, params->vars))
-			return (-1);
-	}
-	else
-	{
-		if (!append_raw_line(params->sh, line, params->vars))
-			return (-1);
-	}
-	return (0);
-}
-
-static int	heredoc_piped_loop(t_delimiter_content_params *params,
+int	heredoc_piped_loop(t_delimiter_content_params *params,
 		char *clean_delim, int is_quoted, void (*old_handler)(int))
 {
 	char	*line;
+	int		result;
 
 	while (1)
 	{
-		if (!params->is_piped)
-			heredoc_prompt();
-		line = read_heredoc_line(params->is_piped);
-		if (!line)
+		if (read_loop_line(params, &line, old_handler) == -1)
+			return (-1);
+		result = process_loop_line(params, line, clean_delim, is_quoted);
+		if (result == 1)
+			return (0);
+		if (result == -1)
 		{
 			signal(SIGINT, old_handler);
 			return (-1);
 		}
-		if (check_delimiter_match(line, clean_delim))
-		{
-			free(line);
-			break ;
-		}
-		if (params->is_last)
-		{
-			if (handle_heredoc_line(params, line, is_quoted) == -1)
-			{
-				free(line);
-				signal(SIGINT, old_handler);
-				return (-1);
-			}
-		}
-		free(line);
 	}
 	return (0);
 }

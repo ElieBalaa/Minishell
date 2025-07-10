@@ -62,3 +62,17 @@ int	process_piped_content(char **content, char **current_pos,
 	}
 	return (0);
 }
+
+int	read_loop_line(t_delimiter_content_params *params,
+		char **line, void (*old_handler)(int))
+{
+	if (!params->is_piped)
+		heredoc_prompt();
+	*line = read_heredoc_line(params->is_piped);
+	if (!*line)
+	{
+		signal(SIGINT, old_handler);
+		return (-1);
+	}
+	return (0);
+}

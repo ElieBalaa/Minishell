@@ -175,6 +175,23 @@ typedef struct s_heredoc_args
 	int			is_piped;
 }	t_heredoc_args;
 
+typedef struct s_iteration_args
+{
+	t_minishell	*sh;
+	char		*line;
+	char		*clean_delim;
+	int			*pipe_fd;
+	int			is_quoted;
+}	t_iteration_args;
+
+typedef struct s_setup_args
+{
+	t_heredoc_args	*args;
+	char			*line;
+	char			*clean_delim;
+	int				is_quoted;
+}	t_setup_args;
+
 /* clean up */
 void		ft_free_split(char **str);
 void		free_tokens(t_token **tokens);
@@ -338,5 +355,19 @@ void		copy_existing_delims(char **new_delims,
 char		*prepare_quoted_delimiter(char *delimiter);
 void		add_heredoc_delimiter(t_ast *node, char *delimiter);
 int			is_quoted_delimiter(char *str);
+
+int			write_line_to_pipe(int *pipe_fd, char *line);
+int			process_heredoc_line(t_minishell *sh, char *line,
+				int *pipe_fd, int is_quoted);
+int			is_delimiter_quoted(char *delimiter);
+int			setup_iteration_args(t_setup_args *setup,
+				t_iteration_args *iter_args);
+int			is_originally_quoted(const char *delimiter);
+int			handle_heredoc_line(t_delimiter_content_params *params,
+				char *line, int is_quoted);
+int			read_loop_line(t_delimiter_content_params *params,
+				char **line, void (*old_handler)(int));
+int			process_loop_line(t_delimiter_content_params *params,
+				char *line, char *clean_delim, int is_quoted);
 
 #endif

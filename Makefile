@@ -57,6 +57,8 @@ SRCS      := main.c \
              src/execution/heredoc_interactive.c \
              src/execution/heredoc_buffer.c \
              src/execution/heredoc_loop.c \
+             src/execution/heredoc_loop_utils.c \
+             src/execution/heredoc_piped_utils.c \
              src/execution/heredoc_piped.c \
              src/execution/heredoc_vars.c \
              src/execution/path_resolver.c \
