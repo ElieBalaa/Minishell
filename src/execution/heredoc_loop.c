@@ -12,15 +12,24 @@
 
 #include "../../includes/minishell.h"
 
-static int	process_heredoc_line(t_minishell *sh, char *line, int *pipe_fd)
+static int	write_line_to_pipe(int *pipe_fd, char *line)
+{
+	write(pipe_fd[1], line, ft_strlen(line));
+	write(pipe_fd[1], "\n", 1);
+	return (0);
+}
+
+static int	process_heredoc_line(t_minishell *sh, char *line,
+		int *pipe_fd, int is_quoted)
 {
 	char	*expanded_line;
 
+	if (is_quoted)
+		return (write_line_to_pipe(pipe_fd, line));
 	expanded_line = expand_vars(sh, line);
 	if (expanded_line)
 	{
-		write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
-		write(pipe_fd[1], "\n", 1);
+		write_line_to_pipe(pipe_fd, expanded_line);
 		free(expanded_line);
 	}
 	free(line);
@@ -31,9 +40,11 @@ int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
 		int *pipe_fd, int is_piped)
 {
 	char	*line;
+	int		is_quoted;
 
 	if (!sh || !delimiter || !pipe_fd)
 		return (-1);
+	is_quoted = (delimiter[0] == '\'' || delimiter[0] == '\"');
 	while (1)
 	{
 		if (!is_piped)
@@ -46,7 +57,7 @@ int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
 			free(line);
 			break ;
 		}
-		if (process_heredoc_line(sh, line, pipe_fd) == -1)
+		if (process_heredoc_line(sh, line, pipe_fd, is_quoted) == -1)
 			return (-1);
 	}
 	return (0);

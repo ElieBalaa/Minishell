@@ -305,4 +305,11 @@ int			init_heredoc_vars(char **delimiters, int *i,
 int			process_multiple_heredocs(t_minishell *sh, char **delimiters,
 				int *pipe_fd);
 
+/* token_heredoc.c */
+void		process_heredoc_redir(char **tok, int *i, t_ast *node);
+char		*remove_quotes(char *str);
+
+/* get_next_line.c */
+char		*get_next_line(int fd);
+
 #endif

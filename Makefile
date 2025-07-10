@@ -29,6 +29,8 @@ SRCS      := main.c \
              src/tokenizer/escape_utils.c \
              src/tokenizer/token.c \
              src/tokenizer/token_utils.c \
+             src/tokenizer/token_heredoc.c \
+             src/tokenizer/token_redir.c \
 			 src/builtins/builtin_utils.c \
 			 src/builtins/cd.c \
 			 src/builtins/echo.c \
@@ -44,20 +46,24 @@ SRCS      := main.c \
              src/gc/gc_tokenizer.c \
              src/gc/gc_whitespace.c \
              src/execution/executor.c \
+             src/execution/executor_redirect.c \
              src/execution/heredoc.c \
              src/execution/heredoc_utils.c \
-             src/execution/heredoc_helpers.c \
              src/execution/heredoc_extra.c \
              src/execution/heredoc_content.c \
              src/execution/heredoc_content_utils.c \
              src/execution/heredoc_interactive.c \
              src/execution/heredoc_buffer.c \
+             src/execution/heredoc_loop.c \
+             src/execution/heredoc_piped.c \
+             src/execution/heredoc_vars.c \
              src/execution/path_resolver.c \
              src/execution/process_manager.c \
              src/utils/shell_utils.c \
              src/utils/init_shell.c \
              src/utils/cleanup_shell.c \
-             src/utils/utils.c
+             src/utils/utils.c \
+             src/utils/get_next_line.c
 
 # Objects
 OBJ_DIR   := obj
