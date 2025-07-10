@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:16:19 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 18:45:53 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:16:46 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char	**create_new_env(t_minishell *sh, const char *key, int old)
 	int		j;
 	char	**new;
 
-	new = malloc(sizeof(*new) * old);
+	new = malloc(sizeof(*new) * (old + 1));
 	if (!new)
 		return (NULL);
 	i = 0;

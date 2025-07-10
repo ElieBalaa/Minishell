@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 20:56:38 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 17:04:43 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ void		ft_free_split(char **str);
 void		free_tokens(t_token **tokens);
 void		free_ast(t_ast *node);
 void		free_toklist(t_token *lst);
-char		*ft_strndup(const char *s, int n);
+// char		*ft_strndup(const char *s, int n);
 void		gc_free_nodes(t_minishell *sh);
 
 /* tokenization */
@@ -279,7 +279,6 @@ char		**split_whitespace(char *str);
 
 /* Heredoc related function prototypes */
 void		heredoc_prompt(void);
-char		*read_heredoc_line(int is_piped);
 int			append_line_to_input(t_input_vars *vars, char *line);
 char		*extract_line(char **current_pos);
 int			append_content_line(char **content, char *line,

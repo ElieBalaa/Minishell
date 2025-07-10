@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/14 15:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:07:26 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,4 +130,4 @@ char	*get_next_line(int fd)
 	line = get_line(str);
 	str = update_str(str);
 	return (line);
-} 
+}

@@ -6,7 +6,7 @@
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 00:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/06/28 22:54:56 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 17:06:42 by oiskanda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*gc_strdup(t_minishell *sh, const char *s)
 	return (dup);
 }
 
-char	*ft_strndup(const char *s, int n)
+char	*ftt_strndup(const char *s, int n)
 {
 	int		i;
 	int		len;
@@ -74,7 +74,7 @@ char	*gc_strndup(t_minishell *sh, const char *s, int n)
 
 	if (!s || !sh)
 		return (NULL);
-	dup = ft_strndup(s, n);
+	dup = ftt_strndup(s, n);
 	if (!dup)
 		return (NULL);
 	if (!gc_add(sh, dup))
