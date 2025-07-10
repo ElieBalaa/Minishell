@@ -26,10 +26,13 @@ SRCS      := main.c \
              src/tokenizer/utils.c \
              src/tokenizer/clean_up.c \
              src/tokenizer/lexer.c \
+             src/tokenizer/lexer_utils.c \
+             src/tokenizer/lexer_helpers.c \
              src/tokenizer/escape_utils.c \
              src/tokenizer/token.c \
              src/tokenizer/token_utils.c \
              src/tokenizer/token_heredoc.c \
+             src/tokenizer/token_heredoc_helpers.c \
              src/tokenizer/token_redir.c \
 			 src/builtins/builtin_utils.c \
 			 src/builtins/cd.c \
@@ -51,7 +54,6 @@ SRCS      := main.c \
              src/execution/heredoc_utils.c \
              src/execution/heredoc_extra.c \
              src/execution/heredoc_content.c \
-             src/execution/heredoc_content_utils.c \
              src/execution/heredoc_interactive.c \
              src/execution/heredoc_buffer.c \
              src/execution/heredoc_loop.c \

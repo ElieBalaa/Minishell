@@ -6,7 +6,7 @@
 /*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:18:34 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/10 19:10:35 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/10 20:04:10 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,6 @@ static int	check_heredoc_delimiter(t_token **lst)
 	return (0);
 }
 
-static char	*process_quoted_delimiter(t_minishell *sh, const char *start, int len)
-{
-	char	*clean;
-
-	clean = gc_strndup(sh, start + 1, len - 2);
-	return (gc_strjoin(sh, "'", clean));
-}
-
 static char	*process_heredoc_token(t_minishell *sh, const char *start, int len)
 {
 	char	*raw;
@@ -40,7 +32,7 @@ static char	*process_heredoc_token(t_minishell *sh, const char *start, int len)
 
 	raw = process_token_escapes(sh, gc_strndup(sh, start, len));
 	if (len >= 2 && ((start[0] == '\'' && start[len - 1] == '\'')
-		|| (start[0] == '"' && start[len - 1] == '"')))
+			|| (start[0] == '"' && start[len - 1] == '"')))
 		return (process_quoted_delimiter(sh, start, len));
 	expd = expand_vars(sh, raw);
 	return (expd);
@@ -56,7 +48,7 @@ static char	*process_regular_token(t_minishell *sh, const char *start, int len)
 	return (expd);
 }
 
-static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
+void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 {
 	t_token	*node;
 	char	*text;
@@ -74,43 +66,6 @@ static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
 		*lst = node;
 	else
 		tok_last(*lst)->next = node;
-}
-
-static void	advance_word(const char **ptr)
-{
-	const char	*p;
-
-	p = *ptr;
-	while (*p && !is_space(*p) && !is_operator(*p))
-	{
-		if (*p == '\'' || *p == '"')
-			p = skip_quotes(p);
-		else if (*p == '\\' && p[1])
-			p += 2;
-		else
-			p++;
-	}
-	*ptr = p;
-}
-
-static void	process_operator(t_token **lst, t_minishell *sh, const char **p)
-{
-	int	len;
-
-	len = op_len(*p);
-	add_tok(lst, sh, *p, len);
-	*p += len;
-}
-
-static void	process_word(t_token **lst, t_minishell *sh, const char **p)
-{
-	const char	*start;
-	int			len;
-
-	start = *p;
-	advance_word(p);
-	len = (int)(*p - start);
-	add_tok(lst, sh, start, len);
 }
 
 t_token	*tokenize(const char *line, t_minishell *sh)

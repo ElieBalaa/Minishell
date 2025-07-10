@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer_utils.c                                      :+:      :+:    :+:   */
+/*   lexer_helpers.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,10 +12,39 @@
 
 #include "../../includes/minishell.h"
 
-char	*process_quoted_delimiter(t_minishell *sh, const char *start, int len)
+void	advance_word(const char **ptr)
 {
-	char	*clean;
+	const char	*p;
 
-	clean = gc_strndup(sh, start + 1, len - 2);
-	return (gc_strjoin(sh, "'", clean));
+	p = *ptr;
+	while (*p && !is_space(*p) && !is_operator(*p))
+	{
+		if (*p == '\'' || *p == '"')
+			p = skip_quotes(p);
+		else if (*p == '\\' && p[1])
+			p += 2;
+		else
+			p++;
+	}
+	*ptr = p;
+}
+
+void	process_operator(t_token **lst, t_minishell *sh, const char **p)
+{
+	int	len;
+
+	len = op_len(*p);
+	add_tok(lst, sh, *p, len);
+	*p += len;
+}
+
+void	process_word(t_token **lst, t_minishell *sh, const char **p)
+{
+	const char	*start;
+	int			len;
+
+	start = *p;
+	advance_word(p);
+	len = (int)(*p - start);
+	add_tok(lst, sh, start, len);
 }

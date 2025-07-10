@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 20:56:38 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 20:03:14 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,8 @@ void		init_minishell(t_minishell *sh, char **envp);
 void		cleanup_shell(t_minishell *sh);
 void		*ft_realloc(void *ptr, size_t new_size);
 void		*ft_memcpy(void *dest, const void *src, size_t n);
+char		*process_quoted_delimiter(t_minishell *sh,
+				const char *start, int len);
 
 /* garbage collector */
 int			gc_init(t_minishell *sh);
@@ -313,5 +315,18 @@ char		*remove_quotes(char *str);
 
 /* get_next_line.c */
 char		*get_next_line(int fd);
+
+/* lexer helpers */
+void		advance_word(const char **ptr);
+void		process_operator(t_token **lst, t_minishell *sh, const char **p);
+void		process_word(t_token **lst, t_minishell *sh, const char **p);
+void		add_tok(t_token **lst, t_minishell *sh, const char *start, int len);
+
+/* token_heredoc helpers */
+void		copy_existing_delims(char **new_delims,
+				char **heredoc_delims, int count);
+char		*prepare_quoted_delimiter(char *delimiter);
+void		add_heredoc_delimiter(t_ast *node, char *delimiter);
+int			is_quoted_delimiter(char *str);
 
 #endif
