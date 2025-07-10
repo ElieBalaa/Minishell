@@ -3,67 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_piped.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/14 15:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:11:16 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	init_piped_content(char **content, size_t *content_size,
-		size_t *content_capacity)
+static int	is_originally_quoted(const char *delimiter)
 {
-	if (!content)
-		return (-1);
-	*content_size = 0;
-	*content_capacity = 0;
-	*content = NULL;
+	if (delimiter && delimiter[0] == '\'')
+		return (1);
 	return (0);
 }
 
-static int	process_piped_line(char **content, char *line,
-		size_t *content_size, size_t *content_capacity)
+static int	handle_heredoc_line(t_delimiter_content_params *params,
+		char *line, int is_quoted)
 {
-	if (!append_content_line(content, line, content_size, content_capacity))
+	if (!is_quoted)
 	{
-		free(line);
-		return (-1);
-	}
-	free(line);
-	return (0);
-}
-
-int	process_piped_content(char **content, char **current_pos,
-		char *delimiter)
-{
-	char	*line;
-	size_t	content_size;
-	size_t	content_capacity;
-
-	if (!content || !current_pos || !delimiter)
-		return (-1);
-	if (init_piped_content(content, &content_size, &content_capacity) == -1)
-		return (-1);
-	while (*current_pos && **current_pos)
-	{
-		line = extract_line(current_pos);
-		if (!line)
+		if (!append_expanded_line(params->sh, line, params->vars))
 			return (-1);
-		if (check_delimiter_match(line, delimiter))
-		{
-			free(line);
-			return (0);
-		}
-		if (process_piped_line(content, line, &content_size,
-				&content_capacity) == -1)
+	}
+	else
+	{
+		if (!append_raw_line(params->sh, line, params->vars))
 			return (-1);
 	}
 	return (0);
 }
 
-int	process_delimiter_content(t_delimiter_content_params *params)
+static int	process_heredoc_content(t_delimiter_content_params *params,
+		char *clean_delim, int is_quoted)
 {
 	char	*line;
 
@@ -74,14 +47,14 @@ int	process_delimiter_content(t_delimiter_content_params *params)
 		line = read_heredoc_line(params->is_piped);
 		if (!line)
 			return (-1);
-		if (check_delimiter_match(line, params->delimiter))
+		if (check_delimiter_match(line, clean_delim))
 		{
 			free(line);
 			break ;
 		}
 		if (params->is_last)
 		{
-			if (!append_expanded_line(params->sh, line, params->vars))
+			if (handle_heredoc_line(params, line, is_quoted) == -1)
 			{
 				free(line);
 				return (-1);
@@ -89,5 +62,24 @@ int	process_delimiter_content(t_delimiter_content_params *params)
 		}
 		free(line);
 	}
+	return (0);
+}
+
+int	process_delimiter_content(t_delimiter_content_params *params)
+{
+	char	*clean_delim;
+	int		is_quoted;
+
+	is_quoted = is_originally_quoted(params->delimiter);
+	if (is_quoted)
+		clean_delim = ft_strdup(params->delimiter + 1);
+	else
+		clean_delim = ft_strdup(params->delimiter);
+	if (process_heredoc_content(params, clean_delim, is_quoted) == -1)
+	{
+		free(clean_delim);
+		return (-1);
+	}
+	free(clean_delim);
 	return (0);
 }

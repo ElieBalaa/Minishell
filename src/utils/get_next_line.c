@@ -130,4 +130,4 @@ char	*get_next_line(int fd)
 	line = get_line(str);
 	str = update_str(str);
 	return (line);
-} 
+}

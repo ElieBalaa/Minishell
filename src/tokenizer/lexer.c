@@ -3,26 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 14:18:34 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/08 21:07:41 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:10:35 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include <string.h>
 
-static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
+static int	check_heredoc_delimiter(t_token **lst)
 {
-	t_token	*node;
+	t_token	*last;
+
+	if (!*lst)
+		return (0);
+	last = tok_last(*lst);
+	if (last && ft_strcmp(last->text, "<<") == 0)
+		return (1);
+	return (0);
+}
+
+static char	*process_quoted_delimiter(t_minishell *sh, const char *start, int len)
+{
+	char	*clean;
+
+	clean = gc_strndup(sh, start + 1, len - 2);
+	return (gc_strjoin(sh, "'", clean));
+}
+
+static char	*process_heredoc_token(t_minishell *sh, const char *start, int len)
+{
 	char	*raw;
 	char	*expd;
-	char	*text;
+
+	raw = process_token_escapes(sh, gc_strndup(sh, start, len));
+	if (len >= 2 && ((start[0] == '\'' && start[len - 1] == '\'')
+		|| (start[0] == '"' && start[len - 1] == '"')))
+		return (process_quoted_delimiter(sh, start, len));
+	expd = expand_vars(sh, raw);
+	return (expd);
+}
+
+static char	*process_regular_token(t_minishell *sh, const char *start, int len)
+{
+	char	*raw;
+	char	*expd;
 
 	raw = process_token_escapes(sh, gc_strndup(sh, start, len));
 	expd = expand_vars(sh, raw);
-	text = expd;
+	return (expd);
+}
+
+static void	add_tok(t_token **lst, t_minishell *sh, const char *start, int len)
+{
+	t_token	*node;
+	char	*text;
+	int		is_heredoc_delim;
+
+	is_heredoc_delim = check_heredoc_delimiter(lst);
+	if (is_heredoc_delim)
+		text = process_heredoc_token(sh, start, len);
+	else
+		text = process_regular_token(sh, start, len);
 	node = gc_malloc(sh, sizeof(*node));
 	node->text = text;
 	node->next = NULL;

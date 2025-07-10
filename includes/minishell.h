@@ -296,6 +296,8 @@ int			process_heredoc(t_minishell *sh, char *delimiter);
 int			resize_content_buffer(t_content_vars *vars);
 int			append_expanded_line(t_minishell *sh, char *line,
 				t_content_vars *vars);
+int			append_raw_line(t_minishell *sh, char *line,
+				t_content_vars *vars);
 void		init_content_vars(t_content_vars *vars);
 int			expand_and_concat_content(t_minishell *sh, char **content,
 				char **concatenated_content, size_t *total_size);

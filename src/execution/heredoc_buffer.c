@@ -32,11 +32,15 @@ int	resize_content_buffer(t_content_vars *vars)
 int	append_expanded_line(t_minishell *sh, char *line, t_content_vars *vars)
 {
 	char	*expanded_line;
+	char	*content_to_write;
 
+	if (!line)
+		return (0);
 	expanded_line = expand_vars(sh, line);
 	if (!expanded_line)
 		return (0);
-	if (vars->size + ft_strlen(expanded_line) + 2 >= vars->capacity)
+	content_to_write = expanded_line;
+	if (vars->size + ft_strlen(content_to_write) + 2 >= vars->capacity)
 	{
 		if (!resize_content_buffer(vars))
 		{
@@ -44,13 +48,31 @@ int	append_expanded_line(t_minishell *sh, char *line, t_content_vars *vars)
 			return (0);
 		}
 	}
-	ft_memcpy(vars->content + vars->size, expanded_line,
-		ft_strlen(expanded_line));
-	vars->size += ft_strlen(expanded_line);
+	ft_memcpy(vars->content + vars->size, content_to_write,
+		ft_strlen(content_to_write));
+	vars->size += ft_strlen(content_to_write);
 	vars->content[vars->size] = '\n';
 	vars->size++;
 	vars->content[vars->size] = '\0';
 	free(expanded_line);
+	return (1);
+}
+
+int	append_raw_line(t_minishell *sh, char *line, t_content_vars *vars)
+{
+	(void)sh;
+	if (!line)
+		return (0);
+	if (vars->size + ft_strlen(line) + 2 >= vars->capacity)
+	{
+		if (!resize_content_buffer(vars))
+			return (0);
+	}
+	ft_memcpy(vars->content + vars->size, line, ft_strlen(line));
+	vars->size += ft_strlen(line);
+	vars->content[vars->size] = '\n';
+	vars->size++;
+	vars->content[vars->size] = '\0';
 	return (1);
 }
 
