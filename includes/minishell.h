@@ -112,6 +112,60 @@ typedef struct s_child_args
 	t_ast				*node;
 }	t_child_args;
 
+typedef struct s_input_vars
+{
+	char	*input;
+	size_t	size;
+	size_t	capacity;
+}	t_input_vars;
+
+typedef struct s_content_vars
+{
+	char	*content;
+	size_t	size;
+	size_t	capacity;
+}	t_content_vars;
+
+typedef struct s_heredoc_loop_params
+{
+	t_minishell		*sh;
+	char			**delimiters;
+	int				is_piped;
+	int				last_index;
+	t_content_vars	*vars;
+}	t_heredoc_loop_params;
+
+typedef struct s_delimiter_content_params
+{
+	t_minishell		*sh;
+	char			*delimiter;
+	int				is_piped;
+	int				is_last;
+	t_content_vars	*vars;
+}	t_delimiter_content_params;
+
+typedef struct s_content_processing_params
+{
+	t_minishell		*sh;
+	char			*content;
+	int				i;
+	int				last_index;
+	char			**concatenated_content;
+	size_t			*total_size;
+}	t_content_processing_params;
+
+typedef struct s_loop_iteration_params
+{
+	t_minishell		*sh;
+	char			**delimiters;
+	int				last_index;
+	char			*full_input;
+	int				i;
+	char			*content;
+	char			*concatenated_content;
+	size_t			total_size;
+}	t_loop_iteration_params;
+
 /* clean up */
 void		ft_free_split(char **str);
 void		free_tokens(t_token **tokens);
@@ -226,8 +280,7 @@ char		**split_whitespace(char *str);
 /* Heredoc related function prototypes */
 void		heredoc_prompt(void);
 char		*read_heredoc_line(int is_piped);
-int			append_line_to_input(char **full_input, char *line,
-				size_t *full_size, size_t *full_capacity);
+int			append_line_to_input(t_input_vars *vars, char *line);
 char		*extract_line(char **current_pos);
 int			append_content_line(char **content, char *line,
 				size_t *content_size, size_t *content_capacity);
@@ -239,5 +292,17 @@ int			find_last_delimiter_index(char **delimiters);
 int			process_content(t_minishell *sh, char **delimiters,
 				int *pipe_fd, char *full_input);
 int			process_heredoc(t_minishell *sh, char *delimiter);
+
+int			resize_content_buffer(t_content_vars *vars);
+int			append_expanded_line(t_minishell *sh, char *line,
+				t_content_vars *vars);
+void		init_content_vars(t_content_vars *vars);
+int			expand_and_concat_content(t_minishell *sh, char **content,
+				char **concatenated_content, size_t *total_size);
+int			process_delimiter_content(t_delimiter_content_params *params);
+int			init_heredoc_vars(char **delimiters, int *i,
+				int *last_index, int *is_piped);
+int			process_multiple_heredocs(t_minishell *sh, char **delimiters,
+				int *pipe_fd);
 
 #endif

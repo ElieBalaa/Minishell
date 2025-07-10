@@ -1,0 +1,142 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/26 17:12:42 by oiskanda          #+#    #+#             */
+/*   Updated: 2025/07/08 21:11:21 by oiskanda         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "includes/minishell.h"
+
+static void	process_line(t_minishell *sh, char *line)
+{
+	t_ast	*ast;
+
+	if (!quotes_balanced(line))
+		ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
+	else
+	{
+		ast = parse_line(line, sh);
+		if (ast)
+		{
+			sh->last_exit = execute_ast(sh, ast);
+			gc_cleanup_all(sh);
+		}
+	}
+}
+
+static int	has_heredoc(char *line)
+{
+	return (ft_strstr(line, "<<") != NULL);
+}
+
+static char	*read_heredoc_input(char *delimiter)
+{
+	char	*line;
+	char	*heredoc_content;
+	size_t	content_size;
+	size_t	content_capacity;
+
+	heredoc_content = NULL;
+	content_size = 0;
+	content_capacity = 0;
+	
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+			break ;
+		if (ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
+			break ;
+		}
+		// Append line to content
+		if (content_size + ft_strlen(line) + 2 >= content_capacity)
+		{
+			content_capacity = content_capacity == 0 ? 1024 : content_capacity * 2;
+			heredoc_content = ft_realloc(heredoc_content, content_capacity);
+			if (!heredoc_content)
+			{
+				free(line);
+				return (NULL);
+			}
+		}
+		ft_memcpy(heredoc_content + content_size, line, ft_strlen(line));
+		content_size += ft_strlen(line);
+		heredoc_content[content_size] = '\n';
+		content_size++;
+		heredoc_content[content_size] = '\0';
+		free(line);
+	}
+	return (heredoc_content);
+}
+
+static void	handle_heredoc_input(t_minishell *sh, char *line)
+{
+	char	*heredoc_content;
+	char	*delimiter;
+	char	*heredoc_pos;
+	char	*delimiter_start;
+	char	*delimiter_end;
+
+	// Find the heredoc delimiter
+	heredoc_pos = ft_strstr(line, "<<");
+	if (!heredoc_pos)
+		return ;
+	
+	// Find the delimiter after <<
+	delimiter_start = heredoc_pos + 2;
+	while (*delimiter_start == ' ' || *delimiter_start == '\t')
+		delimiter_start++;
+	
+	delimiter_end = delimiter_start;
+	while (*delimiter_end && *delimiter_end != ' ' && *delimiter_end != '\t')
+		delimiter_end++;
+	
+	delimiter = ft_strndup(delimiter_start, delimiter_end - delimiter_start);
+	if (!delimiter)
+		return ;
+	
+	// Read heredoc content
+	heredoc_content = read_heredoc_input(delimiter);
+	if (heredoc_content)
+	{
+		// Store heredoc content for later use
+		// For now, we'll just free it since the execution will handle it
+		free(heredoc_content);
+	}
+	free(delimiter);
+}
+
+static void	setup_signals(void)
+{
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_minishell	sh;
+	char		*line;
+
+	(void)argc;
+	(void)argv;
+	init_minishell(&sh, envp);
+	setup_signals();
+	line = readline("minishell> ");
+	while (line)
+	{
+		if (*line)
+			add_history(line);
+		process_line(&sh, line);
+		free(line);
+		line = readline("minishell> ");
+	}
+	cleanup_shell(&sh);
+	return (sh.last_exit);
+}

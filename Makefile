@@ -51,6 +51,7 @@ SRCS      := main.c \
              src/execution/heredoc_content.c \
              src/execution/heredoc_content_utils.c \
              src/execution/heredoc_interactive.c \
+             src/execution/heredoc_buffer.c \
              src/execution/path_resolver.c \
              src/execution/process_manager.c \
              src/utils/shell_utils.c \

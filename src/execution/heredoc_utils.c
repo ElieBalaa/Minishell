@@ -62,7 +62,10 @@ int	append_content_line(char **content, char *line, size_t *content_size,
 	line_len = ft_strlen(line);
 	if (*content_size + line_len + 1 >= *content_capacity)
 	{
-		new_capacity = *content_capacity == 0 ? 1024 : *content_capacity * 2;
+		if (*content_capacity == 0)
+			new_capacity = 1024;
+		else
+			new_capacity = *content_capacity * 2;
 		new_content = ft_realloc(*content, new_capacity);
 		if (!new_content)
 			return (0);

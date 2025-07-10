@@ -58,3 +58,4 @@ test_*
 *_tests
 *.log
 *.sh 
+*.md

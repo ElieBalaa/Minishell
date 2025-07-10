@@ -41,10 +41,32 @@ t_token	*tok_last(t_token *lst)
 	return (lst);
 }
 
+static void	add_heredoc_delimiter(t_ast *node, char *delimiter)
+{
+	int		count;
+	char	**new_delims;
+	int		j;
+
+	count = 0;
+	while (node->heredoc_delims[count])
+		count++;
+	new_delims = malloc((count + 2) * sizeof(char *));
+	if (!new_delims)
+		return ;
+	j = 0;
+	while (j < count)
+	{
+		new_delims[j] = node->heredoc_delims[j];
+		j++;
+	}
+	new_delims[count] = ft_strdup(delimiter);
+	new_delims[count + 1] = NULL;
+	free(node->heredoc_delims);
+	node->heredoc_delims = new_delims;
+}
+
 void	process_redir(char **tok, int *i, t_ast *node)
 {
-	int	count;
-
 	if (!tok || !tok[*i] || !node || *i < 0)
 		return ;
 	if (ft_strcmp(tok[*i], "<") == 0 && tok[*i + 1])
@@ -62,15 +84,7 @@ void	process_redir(char **tok, int *i, t_ast *node)
 			node->heredoc_delims[1] = NULL;
 		}
 		else
-		{
-			count = 0;
-			while (node->heredoc_delims[count])
-				count++;
-			node->heredoc_delims = ft_realloc(node->heredoc_delims,
-					(count + 2) * sizeof(char *));
-			node->heredoc_delims[count] = ft_strdup(tok[*i]);
-			node->heredoc_delims[count + 1] = NULL;
-		}
+			add_heredoc_delimiter(node, tok[*i]);
 		node->is_heredoc = 1;
 	}
 	else if ((ft_strcmp(tok[*i], ">") == 0

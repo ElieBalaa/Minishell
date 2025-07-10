@@ -40,6 +40,8 @@ int	builtin_echo(t_minishell *sh, char **av)
 	nl = 1;
 	i = 1;
 	parse_echo_flags(av, &nl, &i);
+	
+	// Normal echo behavior with arguments
 	while (av[i])
 	{
 		printf("%s", av[i]);

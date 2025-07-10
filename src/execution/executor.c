@@ -46,7 +46,9 @@ int	setup_input_redirect(t_minishell *sh, t_ast *node)
 	if (!node)
 		return (0);
 	if (node->is_heredoc)
+	{
 		return (setup_heredoc_input(sh, node));
+	}
 	if (!node->input)
 		return (0);
 	input_fd = open(node->input, O_RDONLY);
@@ -92,9 +94,13 @@ static int	exec_one(t_minishell *sh, t_ast *n)
 
 	if (!n || !n->cmd || !n->cmd[0])
 		return (1);
+	
+	// Check if this is a builtin
 	st = execute_builtin(sh, n->cmd);
 	if (st != -1)
 		return (st);
+	
+	// External command
 	path = resolve_command_path(sh, n->cmd[0]);
 	if (!path)
 	{

@@ -12,38 +12,56 @@
 
 #include "../../includes/minishell.h"
 
-int	append_line_to_input(char **full_input, char *line, size_t *full_size,
-		size_t *full_capacity)
+int	append_line_to_input(t_input_vars *vars, char *line)
 {
 	size_t	line_len;
 	size_t	new_capacity;
 	char	*new_input;
 
 	line_len = ft_strlen(line);
-	if (*full_size + line_len + 1 >= *full_capacity)
+	if (vars->size + line_len + 1 >= vars->capacity)
 	{
-		new_capacity = *full_capacity == 0 ? 1024 : *full_capacity * 2;
-		new_input = ft_realloc(*full_input, new_capacity);
+		if (vars->capacity == 0)
+			new_capacity = 1024;
+		else
+			new_capacity = vars->capacity * 2;
+		new_input = ft_realloc(vars->input, new_capacity);
 		if (!new_input)
 			return (0);
-		*full_input = new_input;
-		*full_capacity = new_capacity;
+		vars->input = new_input;
+		vars->capacity = new_capacity;
 	}
-	ft_memcpy(*full_input + *full_size, line, line_len);
-	*full_size += line_len;
-	(*full_input)[*full_size] = '\0';
+	ft_memcpy(vars->input + vars->size, line, line_len);
+	vars->size += line_len;
+	vars->input[vars->size] = '\0';
 	return (1);
 }
 
 char	*read_heredoc_line(int is_piped)
 {
 	char	*line;
+	size_t	len;
+	ssize_t	read_result;
 
 	if (is_piped)
-		line = readline("> ");
+	{
+		line = NULL;
+		len = 0;
+		read_result = getline(&line, &len, stdin);
+		if (read_result == -1)
+		{
+			free(line);
+			return (NULL);
+		}
+		if (line && line[read_result - 1] == '\n')
+			line[read_result - 1] = '\0';
+		return (line);
+	}
 	else
+	{
 		line = readline("> ");
-	if (!line)
-		return (NULL);
-	return (line);
+		if (!line)
+			return (NULL);
+		return (line);
+	}
 }

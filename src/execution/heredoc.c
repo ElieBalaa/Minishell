@@ -19,46 +19,64 @@ void	heredoc_prompt(void)
 
 int	find_last_delimiter_index(char **delimiters)
 {
-	int	last_index;
+	int	i;
 
 	if (!delimiters)
 		return (-1);
-	last_index = 0;
-	while (delimiters[last_index])
-		last_index++;
-	return (last_index - 1);
+	i = 0;
+	while (delimiters[i])
+		i++;
+	return (i - 1);
+}
+
+static int	heredoc_loop_body(t_heredoc_loop_params *params)
+{
+	int							i;
+	t_delimiter_content_params	delim_params;
+
+	i = 0;
+	while (params->delimiters[i])
+	{
+		delim_params.sh = params->sh;
+		delim_params.delimiter = params->delimiters[i];
+		delim_params.is_piped = params->is_piped;
+		delim_params.is_last = (i == params->last_index);
+		delim_params.vars = params->vars;
+		if (process_delimiter_content(&delim_params) == -1)
+		{
+			free(params->vars->content);
+			return (-1);
+		}
+		i++;
+	}
+	return (0);
 }
 
 int	process_multiple_heredocs(t_minishell *sh, char **delimiters,
 		int *pipe_fd)
 {
-	int		i;
-	char	*line;
-	char	*expanded_line;
+	int						i;
+	int						last_index;
+	int						is_piped;
+	t_content_vars			vars;
+	t_heredoc_loop_params	params;
 
 	if (!sh || !delimiters || !pipe_fd)
 		return (-1);
-	i = 0;
-	while (delimiters[i])
+	if (init_heredoc_vars(delimiters, &i, &last_index, &is_piped) == -1)
+		return (-1);
+	init_content_vars(&vars);
+	params.sh = sh;
+	params.delimiters = delimiters;
+	params.is_piped = is_piped;
+	params.last_index = last_index;
+	params.vars = &vars;
+	if (heredoc_loop_body(&params) == -1)
+		return (-1);
+	if (vars.content)
 	{
-		while (1)
-		{
-			heredoc_prompt();
-			line = read_heredoc_line(0);
-			if (!line)
-				return (-1);
-			if (check_delimiter_match(line, delimiters[i]))
-			{
-				free(line);
-				break ;
-			}
-			expanded_line = expand_vars(sh, line);
-			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
-			write(pipe_fd[1], "\n", 1);
-			free(line);
-			free(expanded_line);
-		}
-		i++;
+		write(pipe_fd[1], vars.content, vars.size);
+		free(vars.content);
 	}
 	return (0);
 }

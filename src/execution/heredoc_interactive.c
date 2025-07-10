@@ -65,4 +65,4 @@ int	handle_interactive_loop(char **content, char *delimiter,
 			break ;
 	}
 	return (0);
-} 
+}
