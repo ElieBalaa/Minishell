@@ -66,3 +66,12 @@ int	handle_interactive_loop(char **content, char *delimiter,
 	}
 	return (0);
 }
+
+int	process_interactive_content(char **content, char *delimiter,
+		int is_last, int is_piped)
+{
+	*content = NULL;
+	if (!is_piped)
+		heredoc_prompt();
+	return (handle_interactive_loop(content, delimiter, is_last, is_piped));
+}

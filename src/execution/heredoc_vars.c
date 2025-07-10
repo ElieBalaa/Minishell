@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc_content.c                                  :+:      :+:    :+:   */
+/*   heredoc_vars.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,57 +12,42 @@
 
 #include "../../includes/minishell.h"
 
-static int	write_expanded_content(t_minishell *sh, char *line, int *pipe_fd)
+int	init_heredoc_vars(char **delimiters, int *i, int *last_index,
+		int *is_piped)
 {
-	char	*expanded_line;
-
-	expanded_line = expand_vars(sh, line);
-	if (expanded_line)
-	{
-		write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
-		write(pipe_fd[1], "\n", 1);
-		free(expanded_line);
-	}
-	free(line);
+	*i = 0;
+	*last_index = find_last_delimiter_index(delimiters);
+	if (*last_index < 0)
+		return (-1);
+	*is_piped = !isatty(STDIN_FILENO);
 	return (0);
 }
 
-static int	process_single_delimiter(t_minishell *sh, char *delimiter,
-		int *pipe_fd)
+int	process_delimiter_content(t_delimiter_content_params *params)
 {
 	char	*line;
 
 	while (1)
 	{
-		heredoc_prompt();
-		line = read_heredoc_line(0);
+		if (!params->is_piped)
+			heredoc_prompt();
+		line = read_heredoc_line(params->is_piped);
 		if (!line)
 			return (-1);
-		if (check_delimiter_match(line, delimiter))
+		if (check_delimiter_match(line, params->delimiter))
 		{
 			free(line);
 			break ;
 		}
-		if (write_expanded_content(sh, line, pipe_fd) == -1)
-			return (-1);
-	}
-	return (0);
-}
-
-int	process_content(t_minishell *sh, char **delimiters, int *pipe_fd,
-		char *full_input)
-{
-	int		i;
-
-	(void)full_input;
-	if (!sh || !delimiters || !pipe_fd)
-		return (-1);
-	i = 0;
-	while (delimiters[i])
-	{
-		if (process_single_delimiter(sh, delimiters[i], pipe_fd) == -1)
-			return (-1);
-		i++;
+		if (params->is_last)
+		{
+			if (!append_expanded_line(params->sh, line, params->vars))
+			{
+				free(line);
+				return (-1);
+			}
+		}
+		free(line);
 	}
 	return (0);
 }

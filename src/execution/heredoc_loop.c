@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc_content.c                                  :+:      :+:    :+:   */
+/*   heredoc_loop.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static int	write_expanded_content(t_minishell *sh, char *line, int *pipe_fd)
+static int	process_heredoc_line(t_minishell *sh, char *line, int *pipe_fd)
 {
 	char	*expanded_line;
 
@@ -27,42 +27,27 @@ static int	write_expanded_content(t_minishell *sh, char *line, int *pipe_fd)
 	return (0);
 }
 
-static int	process_single_delimiter(t_minishell *sh, char *delimiter,
-		int *pipe_fd)
+int	handle_heredoc_loop(t_minishell *sh, char *delimiter,
+		int *pipe_fd, int is_piped)
 {
 	char	*line;
 
+	if (!sh || !delimiter || !pipe_fd)
+		return (-1);
 	while (1)
 	{
-		heredoc_prompt();
-		line = read_heredoc_line(0);
+		if (!is_piped)
+			heredoc_prompt();
+		line = read_heredoc_line(is_piped);
 		if (!line)
-			return (-1);
+			break ;
 		if (check_delimiter_match(line, delimiter))
 		{
 			free(line);
 			break ;
 		}
-		if (write_expanded_content(sh, line, pipe_fd) == -1)
+		if (process_heredoc_line(sh, line, pipe_fd) == -1)
 			return (-1);
-	}
-	return (0);
-}
-
-int	process_content(t_minishell *sh, char **delimiters, int *pipe_fd,
-		char *full_input)
-{
-	int		i;
-
-	(void)full_input;
-	if (!sh || !delimiters || !pipe_fd)
-		return (-1);
-	i = 0;
-	while (delimiters[i])
-	{
-		if (process_single_delimiter(sh, delimiters[i], pipe_fd) == -1)
-			return (-1);
-		i++;
 	}
 	return (0);
 }
