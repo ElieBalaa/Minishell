@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_content.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oiskanda <oiskanda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/01/14 15:00:00 by oiskanda         ###   ########.fr       */
+/*   Updated: 2025/07/10 20:54:34 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ static int	write_expanded_content(t_minishell *sh, char *line, int *pipe_fd)
 	return (0);
 }
 
-static int	process_single_delimiter(t_minishell *sh, char *delimiter,
-		int *pipe_fd)
+static int	process_delimiter_loop(t_minishell *sh, char *delimiter,
+		int *pipe_fd, void (*old_handler)(int))
 {
 	char	*line;
 
@@ -37,16 +37,34 @@ static int	process_single_delimiter(t_minishell *sh, char *delimiter,
 		heredoc_prompt();
 		line = read_heredoc_line(0);
 		if (!line)
+		{
+			signal(SIGINT, old_handler);
 			return (-1);
+		}
 		if (check_delimiter_match(line, delimiter))
 		{
 			free(line);
 			break ;
 		}
 		if (write_expanded_content(sh, line, pipe_fd) == -1)
+		{
+			signal(SIGINT, old_handler);
 			return (-1);
+		}
 	}
 	return (0);
+}
+
+static int	process_single_delimiter(t_minishell *sh, char *delimiter,
+		int *pipe_fd)
+{
+	void	(*old_handler)(int);
+	int		ret;
+
+	old_handler = signal(SIGINT, heredoc_sig_handler);
+	ret = process_delimiter_loop(sh, delimiter, pipe_fd, old_handler);
+	signal(SIGINT, old_handler);
+	return (ret);
 }
 
 int	process_content(t_minishell *sh, char **delimiters, int *pipe_fd,

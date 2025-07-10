@@ -6,7 +6,7 @@
 /*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:00:00 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/10 19:11:16 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/10 20:54:43 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ static int	handle_heredoc_line(t_delimiter_content_params *params,
 	return (0);
 }
 
-static int	process_heredoc_content(t_delimiter_content_params *params,
-		char *clean_delim, int is_quoted)
+static int	heredoc_piped_loop(t_delimiter_content_params *params,
+		char *clean_delim, int is_quoted, void (*old_handler)(int))
 {
 	char	*line;
 
@@ -46,7 +46,10 @@ static int	process_heredoc_content(t_delimiter_content_params *params,
 			heredoc_prompt();
 		line = read_heredoc_line(params->is_piped);
 		if (!line)
+		{
+			signal(SIGINT, old_handler);
 			return (-1);
+		}
 		if (check_delimiter_match(line, clean_delim))
 		{
 			free(line);
@@ -57,12 +60,25 @@ static int	process_heredoc_content(t_delimiter_content_params *params,
 			if (handle_heredoc_line(params, line, is_quoted) == -1)
 			{
 				free(line);
+				signal(SIGINT, old_handler);
 				return (-1);
 			}
 		}
 		free(line);
 	}
 	return (0);
+}
+
+static int	process_heredoc_content(t_delimiter_content_params *params,
+		char *clean_delim, int is_quoted)
+{
+	void	(*old_handler)(int);
+	int		ret;
+
+	old_handler = signal(SIGINT, heredoc_sig_handler);
+	ret = heredoc_piped_loop(params, clean_delim, is_quoted, old_handler);
+	signal(SIGINT, old_handler);
+	return (ret);
 }
 
 int	process_delimiter_content(t_delimiter_content_params *params)

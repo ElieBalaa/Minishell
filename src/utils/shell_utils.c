@@ -23,6 +23,15 @@ void	sig_handler(int sig)
 	}
 }
 
+void	heredoc_sig_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		ft_putchar_fd('\n', 1);
+		exit(1);
+	}
+}
+
 int	status_code(int wstatus)
 {
 	if (WIFEXITED(wstatus))

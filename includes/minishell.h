@@ -6,7 +6,7 @@
 /*   By: the-flash <the-flash@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 17:13:22 by oiskanda          #+#    #+#             */
-/*   Updated: 2025/07/10 20:03:14 by the-flash        ###   ########.fr       */
+/*   Updated: 2025/07/10 20:58:25 by the-flash        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ typedef struct s_minishell
 	int					last_exit;
 	int					is_interactive;
 	int					child_pid;
+	int					heredoc_active;
 	t_simple_gc			gc;
 }	t_minishell;
 
@@ -166,6 +167,14 @@ typedef struct s_loop_iteration_params
 	size_t			total_size;
 }	t_loop_iteration_params;
 
+typedef struct s_heredoc_args
+{
+	t_minishell	*sh;
+	char		*delimiter;
+	int			*pipe_fd;
+	int			is_piped;
+}	t_heredoc_args;
+
 /* clean up */
 void		ft_free_split(char **str);
 void		free_tokens(t_token **tokens);
@@ -255,6 +264,7 @@ char		*strip_surrounding_quotes(const char *str);
 void		process_redir(char **tok, int *i, t_ast *node);
 int			ft_tokensize(t_token *lst);
 void		sig_handler(int sig);
+void		heredoc_sig_handler(int sig);
 int			status_code(int wstatus);
 void		init_minishell(t_minishell *sh, char **envp);
 void		cleanup_shell(t_minishell *sh);
