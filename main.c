@@ -25,6 +25,7 @@ static void	process_line(t_minishell *sh, char *line)
 		{
 			sh->last_exit = execute_ast(sh, ast);
 			gc_cleanup_all(sh);
+			free_ast(ast);
 		}
 	}
 }

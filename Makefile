@@ -117,7 +117,7 @@ leaks: $(NAME)
 	@printf "$(CYAN)$(BOLD)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)\n"
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 2>&1 | tee leak_output.log
 	@printf "$(CYAN)$(BOLD)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)\n"
-	@./check_leaks.sh leak_output.log
+	@bash check_leaks.sh leak_output.log
 
 norm:
 	@printf "$(BLUE)$(BOLD)Running norminette check...$(RESET)\n"
