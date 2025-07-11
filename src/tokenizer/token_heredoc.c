@@ -47,19 +47,14 @@ void	process_heredoc_redir(char **tok, int *i, t_ast *node)
 	if (!node->heredoc_delims)
 	{
 		node->heredoc_delims = malloc(2 * sizeof(char *));
-		if (!node->heredoc_delims)
-			return ;
 		if (is_quoted_delimiter(tok[*i]))
-			clean_delim = prepare_quoted_delimiter(tok[*i]);
-		else
-			clean_delim = ft_strdup(tok[*i]);
-		if (!clean_delim)
 		{
-			free(node->heredoc_delims);
-			node->heredoc_delims = NULL;
-			return ;
+			clean_delim = remove_quotes(tok[*i]);
+			node->heredoc_delims[0] = ft_strjoin("'", clean_delim);
+			free(clean_delim);
 		}
-		node->heredoc_delims[0] = clean_delim;
+		else
+			node->heredoc_delims[0] = ft_strdup(tok[*i]);
 		node->heredoc_delims[1] = NULL;
 	}
 	else
